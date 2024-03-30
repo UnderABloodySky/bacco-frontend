@@ -1,117 +1,98 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * Asks for camera permission. Shows camera when permissions granted.
  *
  * @format
  */
 
 import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
+  TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import CameraScreen from './CameraScreen';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+import {useCameraPermission, useCameraDevice} from 'react-native-vision-camera';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+  const {hasPermission, requestPermission} = useCameraPermission();
+  const device = useCameraDevice('back');
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  return (
+  return device && hasPermission ? (
+    <CameraScreen device={device} />
+  ) : (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+      <View style={styles.container}>
+        {!hasPermission && (
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={0.8}
+            onPress={requestPermission}>
+            <Text style={[styles.text, styles.darkModeText]}>
+              Touch to grant Camera Permission
+            </Text>
+          </TouchableOpacity>
+        )}
+        {hasPermission && device == null && (
+          <View style={styles.noCameraMessage}>
+            <Text
+              style={[
+                styles.text,
+                isDarkMode ? styles.darkModeText : styles.lightModeText,
+              ]}>
+              No camera recognized
+            </Text>
+          </View>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    height: '100%',
+    padding: 30,
+    justifyContent: 'flex-end',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  button: {
+    padding: 30,
+    bottom: 100,
+    borderRadius: 10,
+    backgroundColor: '#c9ac1a',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  text: {
+    fontSize: 20,
+    textAlign: 'center',
   },
-  highlight: {
-    fontWeight: '700',
+  darkModeText: {
+    color: '#fff',
+  },
+  lightModeText: {
+    color: '#000',
+  },
+  noCameraMessage: {
+    flex: 1,
+    padding: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
