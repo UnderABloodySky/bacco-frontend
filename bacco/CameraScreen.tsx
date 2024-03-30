@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
 
 import {
   Camera,
@@ -20,43 +20,71 @@ const {useCallback, useRef, useState} = React;
 function CameraScreen({device}: {device: CameraDevice}): React.JSX.Element {
   const camera = useRef<Camera>(null);
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
+  const [isShowingResponseMessage, setIsShowingResponseMessage] =
+    useState(false);
+  const [responseMessage, setResponseMessage] = useState('');
 
   const format = useCameraFormat(device, [{photoHdr: true}]);
 
-  const blobToBase64 = useCallback((blob: any): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onerror = reject;
-      reader.onload = () => {
-        resolve(String(reader.result));
-      };
-      reader.readAsDataURL(blob);
-    });
-  }, []);
-
   const takePicture = useCallback(async () => {
     if (camera.current) {
-      const photo = await camera.current?.takePhoto({
-        enablePrecapture: true,
+      setIsShowingResponseMessage(true);
+      const photo = await camera.current?.takePhoto();
+      const filePath = photo.path;
+      const fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+      const fileUri = `file://${photo?.path}`;
+      const result = await fetch(fileUri);
+      const fileType = result.headers.get('content-type');
+      const formData = new FormData();
+      formData.append('file', {
+        uri: fileUri,
+        type: fileType,
+        name: fileName,
       });
-      const result = await fetch(`file://${photo?.path}`);
-      const blobData = await result.blob();
-      const base64Data = await blobToBase64(blobData);
-      return base64Data;
-      // TODO: send file data to BE and display response.
-      // console.log('photo: ', photo);
-      // console.log('result: ', result);
-      // console.log('blobData: ', blobData);
-      // console.log('base64Data: ', base64Data);
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        Accept: 'application/json',
+      };
+      const request = {
+        method: 'POST',
+        headers: headers,
+        body: formData,
+      };
+      const response = await fetch(
+        'http://localhost:8080/imgs/upload',
+        request,
+      );
+      const responseText = await response.text();
+      setResponseMessage(responseText);
     }
-  }, [blobToBase64]);
+  }, []);
 
   const onInitialized = useCallback(() => {
     setIsCameraInitialized(true);
   }, []);
 
+  const clearModal = useCallback(() => {
+    setIsShowingResponseMessage(false);
+    setResponseMessage('');
+  }, []);
+
   return (
     <View style={styles.container}>
+      <Modal
+        visible={isShowingResponseMessage && !!responseMessage}
+        transparent
+        onRequestClose={clearModal}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>{responseMessage}</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={clearModal}>
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <Camera
         ref={camera}
         format={format}
@@ -75,6 +103,47 @@ function CameraScreen({device}: {device: CameraDevice}): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
