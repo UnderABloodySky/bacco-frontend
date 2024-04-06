@@ -5,26 +5,64 @@
  */
 
 import React from 'react';
-import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 
 import {
   Camera,
   CameraDevice,
+  useCameraDevice,
   useCameraFormat,
 } from 'react-native-vision-camera';
+import {Button, Dialog, Portal} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
 
 import CaptureButton from './CaptureButton';
+import FloatingBeveragesButton from './FloatingBeveragesButton';
 
 const {useCallback, useRef, useState} = React;
 
-function CameraScreen({device}: {device: CameraDevice}): React.JSX.Element {
+function CameraScreen(): React.JSX.Element {
   const camera = useRef<Camera>(null);
+  const device: CameraDevice = useCameraDevice('back');
+  const navigation = useNavigation();
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [isShowingResponseMessage, setIsShowingResponseMessage] =
     useState(false);
   const [responseMessage, setResponseMessage] = useState('');
+  const [beveragesHistory, setBeveragesHistory] = useState<string[]>([]);
 
   const format = useCameraFormat(device, [{photoHdr: true}]);
+
+  const saveBeverageToHistory = useCallback(
+    (beverage: string) => {
+      setBeveragesHistory([...beveragesHistory, beverage]);
+    },
+    [beveragesHistory],
+  );
+
+  const clearModal = useCallback(() => {
+    setIsShowingResponseMessage(false);
+    setResponseMessage('');
+  }, []);
+
+  const getRecipes = useCallback(async () => {
+    const mapStringsToQueryParams = (strings: string[]) => {
+      return strings.map(value => `${encodeURIComponent(value)}`).join('&');
+    };
+    const queryParams = mapStringsToQueryParams(beveragesHistory);
+    const url = `http://localhost:8080/imgs/recipes?beverageNames=${queryParams}`;
+    const headers = {
+      Accept: 'application/json',
+    };
+    const request = {
+      method: 'GET',
+      headers: headers,
+    };
+    const response = await fetch(url, request);
+    const bodyResponse = await response.json();
+    clearModal();
+    navigation.navigate('Recipes', {recipes: bodyResponse});
+  }, [beveragesHistory, clearModal, navigation]);
 
   const takePicture = useCallback(async () => {
     if (camera.current) {
@@ -55,36 +93,54 @@ function CameraScreen({device}: {device: CameraDevice}): React.JSX.Element {
         request,
       );
       const responseText = await response.text();
+      const scannedSuccessfully = !responseText.includes(' ');
+      if (scannedSuccessfully) {
+        saveBeverageToHistory(responseText);
+      }
       setResponseMessage(responseText);
     }
-  }, []);
+  }, [saveBeverageToHistory]);
 
   const onInitialized = useCallback(() => {
     setIsCameraInitialized(true);
   }, []);
 
-  const clearModal = useCallback(() => {
-    setIsShowingResponseMessage(false);
-    setResponseMessage('');
-  }, []);
-
   return (
     <View style={styles.container}>
-      <Modal
-        visible={isShowingResponseMessage && !!responseMessage}
-        transparent
-        onRequestClose={clearModal}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>{responseMessage}</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={clearModal}>
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+      <Portal>
+        <Dialog
+          visible={isShowingResponseMessage && !!responseMessage}
+          style={{
+            backgroundColor: '#FAA307',
+          }}
+          onDismiss={clearModal}>
+          <Dialog.Title>Resultado del escaneo</Dialog.Title>
+          <Dialog.Content>
+            <Text
+              style={{
+                fontSize: 18,
+              }}>
+              {responseMessage}
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button
+              onPress={getRecipes}
+              style={{
+                backgroundColor: '#370617',
+              }}>
+              Buscar recetas
+            </Button>
+            <Button
+              onPress={clearModal}
+              style={{
+                backgroundColor: '#370617',
+              }}>
+              Continuar
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
       <Camera
         ref={camera}
         format={format}
@@ -96,6 +152,12 @@ function CameraScreen({device}: {device: CameraDevice}): React.JSX.Element {
         isActive={true}
       />
       <CaptureButton onPress={takePicture} enabled={isCameraInitialized} />
+      {beveragesHistory.length > 0 && (
+        <FloatingBeveragesButton
+          onPress={getRecipes}
+          number={beveragesHistory.length}
+        />
+      )}
     </View>
   );
 }
