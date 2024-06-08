@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     width: CAPTURE_BUTTON_SIZE,
     height: CAPTURE_BUTTON_SIZE,
     borderRadius: CAPTURE_BUTTON_SIZE / 2,
-    backgroundColor: '#e34077',
+    backgroundColor: '#9D0208',
     display: 'none',
   },
   outterCircle: {
