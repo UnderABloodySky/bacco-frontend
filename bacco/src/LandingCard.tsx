@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Card, Text} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -8,53 +8,50 @@ export type LandingCardProps = {
 };
 
 const LandingCard = ({onPressScanButton}: LandingCardProps) => (
-  <Card
-    elevation={5}
-    style={{
-      backgroundColor: '#6A040F99',
-    }}>
-    <Card.Content
-      style={{
-        alignItems: 'center',
-      }}>
-      <Text
-        variant="titleLarge"
-        style={{
-          color: '#FFBA08',
-        }}>
+  <Card elevation={5} style={styles.container}>
+    <Card.Content style={styles.textContainer}>
+      <Text variant="titleLarge" style={styles.text}>
         Escanea tus bebidas y
       </Text>
-      <Text
-        variant="titleLarge"
-        style={{
-          color: '#FFBA08',
-        }}>
+      <Text variant="titleLarge" style={styles.text}>
         arma los mejores tragos!
       </Text>
     </Card.Content>
-    <View
-      style={{
-        padding: 8,
-        width: 120,
-        alignSelf: 'center',
-      }}>
+    <View style={styles.scanButtonContainer}>
       <TouchableOpacity
         activeOpacity={0.6}
         onPress={onPressScanButton}
         disabled={!onPressScanButton}>
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#370617',
-            borderRadius: 100,
-            paddingVertical: 5,
-          }}>
-          <Icon name="scan-circle-outline" size={45} color="#FFBA08" />
+        <View style={styles.scanButton}>
+          <Icon name="scan-circle-outline" size={45} color="#111" />
         </View>
       </TouchableOpacity>
     </View>
   </Card>
 );
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#03071EAA',
+  },
+  text: {
+    color: '#FFF',
+  },
+  textContainer: {
+    alignItems: 'center',
+  },
+  scanButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0E2CA',
+    borderRadius: 100,
+    paddingVertical: 5,
+  },
+  scanButtonContainer: {
+    padding: 8,
+    width: 100,
+    alignSelf: 'center',
+  },
+});
 
 export default LandingCard;
