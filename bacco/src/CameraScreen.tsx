@@ -15,7 +15,7 @@ import {
   useCameraDevice,
   useCameraFormat,
 } from 'react-native-vision-camera';
-import {Button, Dialog, Portal} from 'react-native-paper';
+import {Portal} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 
 import CaptureButton from './CaptureButton';
@@ -23,7 +23,7 @@ import FloatingBeveragesList, {
   beveragesIconsMap,
 } from './FloatingBeveragesList';
 import Banner from './Banner';
-import Searchbox from './Searchbox';
+import SearchWithOptionsDialog from './SearchWithOptionsDialog';
 
 const {useCallback, useRef, useState} = React;
 
@@ -34,16 +34,13 @@ function CameraScreen(): React.JSX.Element {
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [beverageValue, setBeverageValue] = useState('');
   const [isShowingDialog, setIsShowingDialog] = useState(false);
-  const [isShowingIngredientsDialog, setIsShowingIngredientsDialog] = useState(false);
+  const [isShowingIngredientsDialog, setIsShowingIngredientsDialog] =
+    useState(false);
   const [bannerMessage, setBannerMessage] = useState('');
   const [beveragesHistory, setBeveragesHistory] = useState<string[]>([]);
   const [ingredientsHistory, setIngredientsHistory] = useState<string[]>([]);
   const [beveragesOptions, setBeveragesOptions] = useState<string[]>([]);
   const [ingredientsOptions, setIngredientsOptions] = useState<string[]>([]);
-  const [selectedNewBeverage, setSelectedNewBeverage] = useState('');
-  const [selectedNewIngredient, setSelectedNewIngredient] = useState('');
-  const [searchedBeverage, setSearchedBeverage] = useState('');
-  const [searchedIngredient, setSearchedIngredient] = useState('');
   const [photoLocalPath, setPhotoLocalPath] = useState('');
   const [allIngredientsData, setAllIngredientsData] = useState([]);
   const [allBeveragesData, setAllBeveragesData] = useState([]);
@@ -95,19 +92,6 @@ function CameraScreen(): React.JSX.Element {
     },
     [ingredientsHistory, navigation],
   );
-
-  const clearModal = useCallback(() => {
-    setIsShowingDialog(false);
-    setBannerMessage('');
-    setSearchedBeverage('');
-    setSelectedNewBeverage('');
-  }, []);
-
-  const clearIngredientsModal = useCallback(() => {
-    setIsShowingIngredientsDialog(false);
-    setSearchedIngredient('');
-    setSelectedNewIngredient('');
-  }, []);
 
   const retrainModelForBeverage = useCallback(
     async (beverage: string) => {
@@ -184,21 +168,9 @@ function CameraScreen(): React.JSX.Element {
     }
   }, []);
 
-  const handleSearch = (searchTerm: string) => {
-    setSelectedNewBeverage('');
-    setSearchedBeverage(searchTerm);
-    searchBeverages(searchTerm);
-  };
+  const debouncedSearchBeverages = debounce(searchBeverages, 350);
 
-  const handleSearchIngredient = (searchTerm: string) => {
-    setSelectedNewIngredient('');
-    setSearchedIngredient(searchTerm);
-    searchIngredients(searchTerm);
-  };
-
-  const debouncedHandleSearch = debounce(handleSearch, 350);
-
-  const debouncedHandleSearchIngredient = debounce(handleSearchIngredient, 350);
+  const debouncedSearchIngredients = debounce(searchIngredients, 350);
 
   const takePicture = useCallback(async () => {
     if (camera.current) {
@@ -259,100 +231,39 @@ function CameraScreen(): React.JSX.Element {
             searchBeverages('');
           }}
           onFix={() => {
-            setIsShowingDialog(true);
             setBeverageValue('');
+            setIsShowingDialog(true);
             searchBeverages('');
           }}
         />
-        <Dialog
-          visible={isShowingDialog}
-          style={styles.dialog}
-          onDismiss={clearModal}>
-          <Dialog.Title>Selecciona la bebida</Dialog.Title>
-          <Dialog.Content>
-            <Searchbox
-              onChangeText={debouncedHandleSearch}
-              text={searchedBeverage}
-            />
-          </Dialog.Content>
-          <Dialog.ScrollArea style={styles.options}>
-            <ScrollView>
-              {beveragesOptions.map((beverage, index) => (
-                <Button
-                  key={`beverage-${index}`}
-                  contentStyle={styles.beverageOption}
-                  icon={
-                    'radiobox-' +
-                    (selectedNewBeverage === beverage ? 'marked' : 'blank')
-                  }
-                  onPress={() => {
-                    setSearchedBeverage(beverage);
-                    setSelectedNewBeverage(beverage);
-                  }}>
-                  {beverage.toLocaleUpperCase()}
-                </Button>
-              ))}
-            </ScrollView>
-          </Dialog.ScrollArea>
-          {selectedNewBeverage && (
-            <Dialog.Actions>
-              <Button
-                onPress={() => {
-                  saveBeverageToHistory(selectedNewBeverage);
-                  retrainModelForBeverage(selectedNewBeverage);
-                  setBeverageValue('');
-                  clearModal();
-                }}
-                style={styles.confirmButton}>
-                <Text style={styles.confirmButtonText}>Confirmar</Text>
-              </Button>
-            </Dialog.Actions>
-          )}
-        </Dialog>
-        <Dialog
-          visible={isShowingIngredientsDialog}
-          style={styles.dialog}
-          onDismiss={clearIngredientsModal}>
-          <Dialog.Title>Selecciona el ingrediente</Dialog.Title>
-          <Dialog.Content>
-            <Searchbox
-              placeholder="Busca y selecciona un ingrediente"
-              onChangeText={debouncedHandleSearchIngredient}
-              text={searchedIngredient}
-            />
-          </Dialog.Content>
-          <Dialog.ScrollArea style={styles.options}>
-            <ScrollView>
-              {ingredientsOptions.map((ingredient, index) => (
-                <Button
-                  key={`ingredient-${index}`}
-                  contentStyle={styles.beverageOption}
-                  icon={
-                    'radiobox-' +
-                    (selectedNewIngredient === ingredient ? 'marked' : 'blank')
-                  }
-                  onPress={() => {
-                    setSearchedIngredient(ingredient);
-                    setSelectedNewIngredient(ingredient);
-                  }}>
-                  {ingredient.toLocaleUpperCase()}
-                </Button>
-              ))}
-            </ScrollView>
-          </Dialog.ScrollArea>
-          {selectedNewIngredient && (
-            <Dialog.Actions>
-              <Button
-                onPress={() => {
-                  saveIngredientToHistory(selectedNewIngredient);
-                  clearIngredientsModal();
-                }}
-                style={styles.confirmButton}>
-                <Text style={styles.confirmButtonText}>Confirmar</Text>
-              </Button>
-            </Dialog.Actions>
-          )}
-        </Dialog>
+        <SearchWithOptionsDialog
+          clearDialog={() => {
+            setIsShowingDialog(false);
+            setBannerMessage('');
+          }}
+          isShowingDialog={isShowingDialog}
+          onChangeSearch={debouncedSearchBeverages}
+          onConfirm={confirmedOption => {
+            saveBeverageToHistory(confirmedOption);
+            retrainModelForBeverage(confirmedOption);
+            searchBeverages('');
+          }}
+          options={beveragesOptions}
+          title={'Selecciona la bebida'}
+        />
+        <SearchWithOptionsDialog
+          clearDialog={() => {
+            setIsShowingIngredientsDialog(false);
+          }}
+          isShowingDialog={isShowingIngredientsDialog}
+          onChangeSearch={debouncedSearchIngredients}
+          onConfirm={confirmedOption => {
+            saveIngredientToHistory(confirmedOption);
+            searchIngredients('');
+          }}
+          options={ingredientsOptions}
+          title={'Selecciona el ingrediente'}
+        />
       </Portal>
       <Camera
         ref={camera}
@@ -369,8 +280,8 @@ function CameraScreen(): React.JSX.Element {
         beverages={beveragesHistory}
         ingredients={ingredientsHistory}
         onAddIngredientPress={() => {
-          setIsShowingIngredientsDialog(true);
           searchIngredients('');
+          setIsShowingIngredientsDialog(true);
         }}
         onPressBevarage={beverage => {
           const beverageData = allBeveragesData?.find(
@@ -404,26 +315,6 @@ function CameraScreen(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  dialog: {
-    position: 'absolute',
-    top: 50,
-    width: '85%',
-    backgroundColor: '#D2C3C3',
-  },
-  options: {
-    maxHeight: 200,
-    borderBottomWidth: 0,
-    borderTopWidth: 0,
-  },
-  beverageOption: {
-    flexDirection: 'row-reverse',
-  },
-  confirmButton: {
-    backgroundColor: '#370617',
-  },
-  confirmButtonText: {
-    color: '#FFF',
   },
 });
 
