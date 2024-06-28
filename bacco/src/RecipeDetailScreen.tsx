@@ -11,6 +11,7 @@ import {
   Card,
   Divider,
   FAB,
+  Icon,
   Text as PaperText,
   TouchableRipple,
 } from 'react-native-paper';
@@ -41,15 +42,19 @@ const FloatingCountBadge = ({
         label={label}
         color={color}
         customSize={30}
-        style={[
-          styles.fab,
-          isIngredientsBadge && styles.fabIngredientsPosition,
-          hasAll && styles.fabHasAll,
-        ]}
+        style={[styles.countBadge, hasAll && styles.fabHasAll]}
       />
     </View>
   );
 };
+
+const FloatingTouchIcon = () => (
+  <View style={[styles.fab, styles.fabHasAll]}>
+    <View style={styles.tapIcon}>
+      <Icon source="gesture-tap" color="#111" size={28} />
+    </View>
+  </View>
+);
 
 const RecipeDetailScreen = () => {
   const route = useRoute();
@@ -93,27 +98,30 @@ const RecipeDetailScreen = () => {
                   });
                 }}
                 rippleColor="rgba(0, 0, 0, .32)">
-                <Card
-                  // eslint-disable-next-line react-native/no-inline-styles
-                  contentStyle={{
-                    ...styles.entityCard,
-                    opacity: beverage.matched ? 1 : 0.7,
-                  }}>
-                  <Card.Cover src={beverage.beverage.imagePath} />
-                  <Card.Title
-                    title={capitalize(beverage.beverage.name)}
-                    titleVariant="titleMedium"
-                  />
-                  <Card.Content>
-                    <PaperText variant="bodyMedium" numberOfLines={2}>
-                      {beverage.beverage.description}
-                    </PaperText>
-                    <Divider bold style={styles.divider} />
-                    <PaperText variant="bodyMedium" numberOfLines={2}>
-                      Medidas: {beverage.measure}
-                    </PaperText>
-                  </Card.Content>
-                </Card>
+                <>
+                  <FloatingTouchIcon />
+                  <Card
+                    // eslint-disable-next-line react-native/no-inline-styles
+                    contentStyle={{
+                      ...styles.entityCard,
+                      opacity: beverage.matched ? 1 : 0.7,
+                    }}>
+                    <Card.Cover src={beverage.beverage.imagePath} />
+                    <Card.Title
+                      title={capitalize(beverage.beverage.name)}
+                      titleVariant="titleMedium"
+                    />
+                    <Card.Content>
+                      <PaperText variant="bodyMedium" numberOfLines={2}>
+                        {beverage.beverage.description}
+                      </PaperText>
+                      <Divider bold style={styles.divider} />
+                      <PaperText variant="bodyMedium" numberOfLines={2}>
+                        Medidas: {beverage.measure}
+                      </PaperText>
+                    </Card.Content>
+                  </Card>
+                </>
               </TouchableRipple>
             ))}
           </View>
@@ -126,6 +134,7 @@ const RecipeDetailScreen = () => {
               <FloatingCountBadge
                 actual={recipe.ingredientsActual}
                 total={recipe.ingredientsTotal}
+                isIngredientsBadge
               />
             </View>
             {recipe.ingredients.map(ingredient => (
@@ -139,27 +148,30 @@ const RecipeDetailScreen = () => {
                   });
                 }}
                 rippleColor="rgba(0, 0, 0, .32)">
-                <Card
-                  // eslint-disable-next-line react-native/no-inline-styles
-                  contentStyle={{
-                    ...styles.entityCard,
-                    opacity: ingredient.matched ? 1 : 0.7,
-                  }}>
-                  <Card.Cover src={ingredient.ingredient.imagePath} />
-                  <Card.Title
-                    title={capitalize(ingredient.ingredient.name)}
-                    titleVariant="titleMedium"
-                  />
-                  <Card.Content>
-                    <PaperText variant="bodyMedium" numberOfLines={2}>
-                      {ingredient.ingredient.description}
-                    </PaperText>
-                    <Divider bold style={styles.divider} />
-                    <PaperText variant="bodyMedium" numberOfLines={2}>
-                      Cantidad: {ingredient.quantity}
-                    </PaperText>
-                  </Card.Content>
-                </Card>
+                <>
+                  <FloatingTouchIcon />
+                  <Card
+                    // eslint-disable-next-line react-native/no-inline-styles
+                    contentStyle={{
+                      ...styles.entityCard,
+                      opacity: ingredient.matched ? 1 : 0.7,
+                    }}>
+                    <Card.Cover src={ingredient.ingredient.imagePath} />
+                    <Card.Title
+                      title={capitalize(ingredient.ingredient.name)}
+                      titleVariant="titleMedium"
+                    />
+                    <Card.Content>
+                      <PaperText variant="bodyMedium" numberOfLines={2}>
+                        {ingredient.ingredient.description}
+                      </PaperText>
+                      <Divider bold style={styles.divider} />
+                      <PaperText variant="bodyMedium" numberOfLines={2}>
+                        Cantidad: {ingredient.quantity}
+                      </PaperText>
+                    </Card.Content>
+                  </Card>
+                </>
               </TouchableRipple>
             ))}
           </View>
@@ -195,12 +207,21 @@ const styles = StyleSheet.create({
   recipeDescriptionContainer: {
     marginTop: 10,
   },
-  fab: {
+  countBadge: {
     borderRadius: 17,
     backgroundColor: '#fafafa99',
   },
-  fabIngredientsPosition: {
-    top: 52,
+  fab: {
+    position: 'absolute',
+    borderRadius: 30,
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    padding: 6,
+    backgroundColor: '#fafafa99',
+  },
+  tapIcon: {
+    bottom: 3,
   },
   fabHasAll: {
     backgroundColor: '#F7F3F9',

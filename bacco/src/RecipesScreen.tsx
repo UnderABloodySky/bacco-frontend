@@ -1,34 +1,103 @@
-import * as React from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
-import {Card, FAB, Text, TouchableRipple} from 'react-native-paper';
+import React, {useState} from 'react';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {Card, FAB, Icon, TouchableRipple} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import MaskedView from '@react-native-masked-view/masked-view';
+// @ts-ignore
+import capitalize from 'lodash/capitalize';
 
 type FloatingCountBadgeProps = {
   actual: number;
   total: number;
+  entities: any[];
   isIngredientsBadge?: boolean;
 };
 
 const FloatingCountBadge = ({
   actual,
   total,
+  entities,
   isIngredientsBadge = false,
 }: FloatingCountBadgeProps) => {
+  const [isHintVisible, setIsHintVisible] = useState(false);
+
+  const missingEntities = entities
+    ?.filter(entity => !entity.matched)
+    .map(entity =>
+      capitalize(
+        isIngredientsBadge ? entity?.ingredient?.name : entity?.beverage?.name,
+      ),
+    );
+  const matchedEntities = entities
+    ?.filter(entity => entity.matched)
+    .map(entity =>
+      capitalize(
+        isIngredientsBadge ? entity?.ingredient?.name : entity?.beverage?.name,
+      ),
+    );
+
   const icon = isIngredientsBadge ? 'fruit-cherries' : 'glass-cocktail';
   const label = `${actual}/${total}`;
   const hasAll = actual === total;
   return (
-    <FAB
-      icon={icon}
-      label={label}
-      color="#111"
-      customSize={35}
-      style={[
-        styles.fab,
-        isIngredientsBadge && styles.fabIngredientsPosition,
-        hasAll && styles.fabHasAll,
-      ]}
-    />
+    <>
+      <View
+        pointerEvents="none"
+        style={[
+          styles.longPressIcon,
+          isIngredientsBadge && styles.longPressIconForIngredients,
+        ]}>
+        <Icon source="gesture-tap-hold" color="#111" size={25} />
+      </View>
+      <FAB
+        icon={icon}
+        label={label}
+        color="#111"
+        customSize={35}
+        onLongPress={() => {
+          if (!isHintVisible) {
+            setIsHintVisible(true);
+            setTimeout(() => {
+              setIsHintVisible(false);
+            }, 2500);
+          }
+        }}
+        style={[
+          styles.fab,
+          isIngredientsBadge && styles.fabIngredientsPosition,
+          hasAll && styles.fabHasAll,
+        ]}
+      />
+      {isHintVisible && (
+        <View
+          style={{
+            position: 'absolute',
+            top: 95,
+            right: 10,
+            width: 350,
+            borderRadius: 5,
+            minHeight: 80,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 5,
+            zIndex: 10,
+          }}>
+          <Text
+            style={{
+              color: 'white',
+              opacity: 0.85,
+              fontSize: 16,
+              display: missingEntities.length ? 'flex' : 'none',
+            }}>{`Faltantes: ${missingEntities.join(', ')}`}</Text>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 16,
+              display: matchedEntities.length ? 'flex' : 'none',
+            }}>{`Tenes: ${matchedEntities.join(', ')}`}</Text>
+        </View>
+      )}
+    </>
   );
 };
 
@@ -92,54 +161,79 @@ const RecipesScreen = () => {
       data={sortedRecipes}
       style={styles.recipeList}
       ListFooterComponent={Footer}
-      renderItem={({item: recipe}) => {
-        return (
-          <TouchableRipple
-            borderless
-            style={styles.recipeContainer}
-            onPress={() => {
-              navigation.navigate('Receta', {
-                recipe: recipe,
-                navBarTitle: 'Detalle de Receta',
-              });
-            }}
-            rippleColor="rgba(0, 0, 0, .32)">
-            <>
-              <FloatingCountBadge
-                actual={recipe.beveragesActual}
-                total={recipe.beveragesTotal}
+      renderItem={({item: recipe}) => (
+        <TouchableRipple
+          borderless
+          style={styles.recipeContainer}
+          onPress={() => {
+            navigation.navigate('Receta', {
+              recipe: recipe,
+              navBarTitle: 'Detalle de Receta',
+            });
+          }}
+          rippleColor="rgba(0, 0, 0, .32)">
+          <>
+            <FloatingCountBadge
+              actual={recipe.beveragesActual}
+              total={recipe.beveragesTotal}
+              entities={recipe.beverages}
+            />
+            <FloatingCountBadge
+              actual={recipe.ingredientsActual}
+              total={recipe.ingredientsTotal}
+              entities={recipe.ingredients}
+              isIngredientsBadge
+            />
+            <Card contentStyle={styles.recipeCard}>
+              <Card.Cover src={recipe.imagePath} />
+              <Card.Title
+                title={recipe.name}
+                titleVariant="titleLarge"
+                titleStyle={styles.recipeText}
               />
-              <FloatingCountBadge
-                actual={recipe.ingredientsActual}
-                total={recipe.ingredientsTotal}
-                isIngredientsBadge
-              />
-              <Card contentStyle={styles.recipeCard}>
-                <Card.Cover src={recipe.imagePath} />
-                <Card.Title
-                  title={recipe.name}
-                  titleVariant="titleLarge"
-                  titleStyle={styles.recipeText}
-                />
-                <Card.Content>
-                  <Text
-                    variant="bodyLarge"
-                    numberOfLines={2}
-                    style={styles.recipeText}>
-                    {recipe.description}
-                  </Text>
-                </Card.Content>
-              </Card>
-            </>
-          </TouchableRipple>
-        );
-      }}
+              <Card.Content>
+                <MaskedView
+                  maskElement={
+                    <Text
+                      numberOfLines={3}
+                      style={[
+                        styles.recipeDescriptionText,
+                        styles.descriptionMask,
+                      ]}>
+                      {recipe.description}
+                    </Text>
+                  }>
+                  <LinearGradient
+                    colors={[
+                      'rgba(255, 255, 255, 0.2)',
+                      'rgba(255, 255, 255, 1)',
+                    ]}
+                    start={{x: 0, y: 1}}
+                    end={{x: 0, y: 0}}>
+                    <Text
+                      numberOfLines={3}
+                      style={[styles.recipeDescriptionText, styles.invisible]}>
+                      {recipe.description}
+                    </Text>
+                  </LinearGradient>
+                </MaskedView>
+              </Card.Content>
+            </Card>
+          </>
+        </TouchableRipple>
+      )}
       keyExtractor={recipe => recipe.id.toString()}
     />
   ) : null;
 };
 
 const styles = StyleSheet.create({
+  longPressIcon: {
+    position: 'absolute',
+    top: 11,
+    right: 12,
+    zIndex: 10,
+  },
   fab: {
     position: 'absolute',
     borderRadius: 17,
@@ -147,9 +241,13 @@ const styles = StyleSheet.create({
     right: 10,
     zIndex: 1,
     backgroundColor: '#fafafa99',
+    paddingRight: 5,
   },
   fabIngredientsPosition: {
     top: 52,
+  },
+  longPressIconForIngredients: {
+    top: 53,
   },
   fabHasAll: {
     backgroundColor: '#F7F3F9',
@@ -168,6 +266,20 @@ const styles = StyleSheet.create({
   },
   recipeText: {
     color: 'white',
+  },
+  recipeDescriptionText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'sans-serif',
+    letterSpacing: 0.15,
+    lineHeight: 24,
+    fontWeight: 'normal',
+  },
+  descriptionMask: {
+    backgroundColor: 'transparent',
+  },
+  invisible: {
+    opacity: 0,
   },
   footer: {
     height: 20,
