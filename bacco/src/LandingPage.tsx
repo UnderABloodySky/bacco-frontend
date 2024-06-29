@@ -10,7 +10,6 @@ const {useCallback} = React;
 const LandingPage = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  console.log('route?.params: ', route?.params);
   const {hasPermission, requestPermission} = useCameraPermission();
   const handlePressingScanButton = useCallback(async () => {
     if (hasPermission) {

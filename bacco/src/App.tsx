@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator();
 function App(): React.JSX.Element {
   return (
     <Stack.Navigator
-      initialRouteName="Register"
+      initialRouteName="Landing"
       screenOptions={{
         // @ts-ignore
         header: NavBar,

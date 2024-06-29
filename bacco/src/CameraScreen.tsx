@@ -32,7 +32,6 @@ function CameraScreen(): React.JSX.Element {
   const device: CameraDevice = useCameraDevice('back');
   const navigation = useNavigation();
   const route = useRoute();
-  console.log('route?.params: ', route?.params);
 
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [beverageValue, setBeverageValue] = useState('');
@@ -353,7 +352,7 @@ function CameraScreen(): React.JSX.Element {
         name: 'HIBISCUS',
       },
     ];
-    console.log('searchIngredients, bodyResponse: ', bodyResponse);
+    // console.log('searchIngredients, bodyResponse: ', bodyResponse);
     const responseIngredients: string[] = [
       ...new Set<string>(
         bodyResponse
@@ -496,8 +495,8 @@ function CameraScreen(): React.JSX.Element {
 
             if (route?.params) {
               params = {
-                ...params,
                 ...route?.params,
+                ...params,
               };
             }
 
@@ -516,8 +515,8 @@ function CameraScreen(): React.JSX.Element {
 
             if (route?.params) {
               params = {
-                ...params,
                 ...route?.params,
+                ...params,
               };
             }
 

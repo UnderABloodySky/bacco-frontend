@@ -93,9 +93,9 @@ const RecipeDetailScreen = () => {
                 style={styles.entityCardContainer}
                 onPress={() => {
                   navigation.navigate('Detalle', {
+                    ...(route?.params || {}),
                     beverage: beverage.beverage,
                     navBarTitle: 'Detalle de Bebida',
-                    ...(route?.params || {}),
                   });
                 }}
                 rippleColor="rgba(0, 0, 0, .32)">
@@ -144,9 +144,9 @@ const RecipeDetailScreen = () => {
                 style={styles.entityCardContainer}
                 onPress={() => {
                   navigation.navigate('Detalle', {
+                    ...(route?.params || {}),
                     ingredient: ingredient.ingredient,
                     navBarTitle: 'Detalle de Ingrediente',
-                    ...(route?.params || {}),
                   });
                 }}
                 rippleColor="rgba(0, 0, 0, .32)">

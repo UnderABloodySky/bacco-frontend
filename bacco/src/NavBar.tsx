@@ -561,11 +561,11 @@ export default function NavBar({navigation, route, back = false}) {
     ];
     // console.log('getRecipes, bodyResponse: ', JSON.stringify(bodyResponse));
     navigation.navigate('Recetas', {
+      ...(route?.params || {}),
       beverages: beverages,
       ingredients: ingredients,
       recipes: bodyResponse,
       navBarTitle: 'Resultado de Recetas',
-      ...(route?.params || {}),
     });
   }, [beverages, ingredients, navigation, route?.params]);
 
@@ -582,11 +582,11 @@ export default function NavBar({navigation, route, back = false}) {
                 icon="filter-outline"
                 onPress={() => {
                   navigation.navigate('Filtro', {
+                    ...(route?.params || {}),
                     beverages: beverages,
                     ingredients: ingredients,
                     recipes: recipes,
                     navBarTitle: 'Filtro de Recetas',
-                    ...(route?.params || {}),
                   });
                 }}
               />

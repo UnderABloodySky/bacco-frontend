@@ -11,9 +11,7 @@ import {
   View,
 } from 'react-native';
 
-
-
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 const logo = require('../assets/images/logo/output-onlinepngtools-light.png');
 const google = require('../assets/images/logos/google.png');
 const facebook = require('../assets/images/logos/facebook.png');
@@ -21,6 +19,7 @@ const instagram = require('../assets/images/logos/instagram.png');
 const tiktok = require('../assets/images/logos/tiktok.png');
 
 export default function LoginForm() {
+  const navigation = useNavigation();
   const [click, setClick] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -32,20 +31,22 @@ export default function LoginForm() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('https://localhost:8080/users/login', {
+      const stringifiedBody = JSON.stringify({name: username, password});
+      const response = await fetch('http://localhost:8080/users/login', {
         method: 'POST',
         headers: {
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({username, password}),
+        body: stringifiedBody,
       });
       const result = await response.json();
       if (response.ok) {
-        const navigation = useNavigation();
-        const user = result.user;
-        navigation.navigate('Landing', {})//user: user});
-        Alert.alert('Login Exitoso!');
+        navigation.navigate('Landing', {
+          ...result,
+        });
       } else {
+        // TODO: no entra en este caso porque el backend respone con 204 y null en el body (este es el problema, deberia ser un json)
         setErrorMessage(result.message || 'Usuario o contraseña incorrecta');
       }
     } catch (error) {
@@ -62,7 +63,10 @@ export default function LoginForm() {
           style={styles.input}
           placeholder="Email o usuario"
           value={username}
-          onChangeText={setUsername}
+          onChangeText={text => {
+            setErrorMessage('');
+            setUsername(text);
+          }}
           autoCorrect={false}
           autoCapitalize="none"
         />
@@ -71,7 +75,10 @@ export default function LoginForm() {
           placeholder="Contraseña"
           secureTextEntry
           value={password}
-          onChangeText={setPassword}
+          onChangeText={text => {
+            setErrorMessage('');
+            setPassword(text);
+          }}
           autoCorrect={false}
           autoCapitalize="none"
         />
@@ -112,10 +119,20 @@ export default function LoginForm() {
         <Image source={tiktok} style={styles.icons} />
       </View>
 
-      <Text style={styles.footerText}>
-        ¿Todavia no tenes una cuenta?
-        <Text style={styles.signup}> Registrate!</Text>
-      </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+        }}>
+        <Text style={styles.footerText}>¿Todavia no tenes una cuenta?</Text>
+        <Pressable
+          hitSlop={10}
+          onPress={() => {
+            // @ts-ignore
+            navigation.navigate('Register');
+          }}>
+          <Text style={styles.signup}> Registrate!</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }

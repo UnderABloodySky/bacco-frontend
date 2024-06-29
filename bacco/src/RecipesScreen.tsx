@@ -238,9 +238,9 @@ const RecipesScreen = () => {
           style={styles.recipeContainer}
           onPress={() => {
             navigation.navigate('Receta', {
+              ...(route?.params || {}),
               recipe: recipe,
               navBarTitle: 'Detalle de Receta',
-              ...(route?.params || {}),
             });
           }}
           rippleColor="rgba(0, 0, 0, .32)">
