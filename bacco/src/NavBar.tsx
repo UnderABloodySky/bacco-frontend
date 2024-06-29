@@ -565,8 +565,9 @@ export default function NavBar({navigation, route, back = false}) {
       ingredients: ingredients,
       recipes: bodyResponse,
       navBarTitle: 'Resultado de Recetas',
+      ...(route?.params || {}),
     });
-  }, [beverages, ingredients, navigation]);
+  }, [beverages, ingredients, navigation, route?.params]);
 
   return (
     <>
@@ -585,6 +586,7 @@ export default function NavBar({navigation, route, back = false}) {
                     ingredients: ingredients,
                     recipes: recipes,
                     navBarTitle: 'Filtro de Recetas',
+                    ...(route?.params || {}),
                   });
                 }}
               />

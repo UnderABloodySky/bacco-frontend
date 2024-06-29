@@ -240,6 +240,7 @@ const RecipesScreen = () => {
             navigation.navigate('Receta', {
               recipe: recipe,
               navBarTitle: 'Detalle de Receta',
+              ...(route?.params || {}),
             });
           }}
           rippleColor="rgba(0, 0, 0, .32)">

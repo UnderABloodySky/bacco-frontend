@@ -11,6 +11,7 @@ import {
   View,
   Linking,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 const logo = require('../assets/images/logo/output-onlinepngtools-light.png');
 const google = require('../assets/images/logos/google.png');
@@ -24,12 +25,13 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isAdult, setIsAdult] = useState(false);
-  const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptPrivacyPolicy, setAcceptPrivacyPolicy] = useState(false);
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const navigation = useNavigation();
 
   const validateEmail = (email) => {
     return /\S+@\S+\.\S+/.test(email);
@@ -80,7 +82,6 @@ export default function RegisterScreen() {
       password.trim().length > 16 ||
       password !== confirmPassword ||
       !isAdult ||
-      !acceptTerms ||
       !acceptPrivacyPolicy
     ) {
       Alert.alert('Por favor, revisa los campos ingresados.');
@@ -88,16 +89,19 @@ export default function RegisterScreen() {
     }
 
     try {
-      const response = await fetch('https://tu-backend.com/api/register', {
+      const response = await fetch('http://localhost:8080/users', {
         method: 'POST',
         headers: {
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({name, email, password}),
       });
       const result = await response.json();
       if (response.ok) {
-        Alert.alert('Registro Exitoso!');
+        navigation.navigate('Landing', {
+          ...result,
+        });
       } else {
         Alert.alert(result.message || 'Error en el registro');
       }
@@ -115,7 +119,6 @@ export default function RegisterScreen() {
       password.trim().length <= 16 &&
       password === confirmPassword &&
       isAdult &&
-      acceptTerms &&
       acceptPrivacyPolicy
     );
   };

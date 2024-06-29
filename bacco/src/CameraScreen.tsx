@@ -16,7 +16,7 @@ import {
   useCameraFormat,
 } from 'react-native-vision-camera';
 import {Portal} from 'react-native-paper';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
 import CaptureButton from './CaptureButton';
 import FloatingBeveragesList, {
@@ -31,6 +31,9 @@ function CameraScreen(): React.JSX.Element {
   const camera = useRef<Camera>(null);
   const device: CameraDevice = useCameraDevice('back');
   const navigation = useNavigation();
+  const route = useRoute();
+  console.log('route?.params: ', route?.params);
+
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [beverageValue, setBeverageValue] = useState('');
   const [isShowingDialog, setIsShowingDialog] = useState(false);
@@ -486,10 +489,19 @@ function CameraScreen(): React.JSX.Element {
             bev => bev?.name.toLowerCase() === beverage,
           );
           if (beverageData) {
-            navigation.navigate('Detalle', {
+            let params = {
               beverage: beverageData,
               navBarTitle: 'Detalle de Bebida',
-            });
+            };
+
+            if (route?.params) {
+              params = {
+                ...params,
+                ...route?.params,
+              };
+            }
+
+            navigation.navigate('Detalle', params);
           }
         }}
         onPressIngredient={ingredient => {
@@ -497,10 +509,19 @@ function CameraScreen(): React.JSX.Element {
             ing => ing?.name.toLowerCase() === ingredient,
           );
           if (ingredientData) {
-            navigation.navigate('Detalle', {
+            let params = {
               ingredient: ingredientData,
               navBarTitle: 'Detalle de Ingrediente',
-            });
+            };
+
+            if (route?.params) {
+              params = {
+                ...params,
+                ...route?.params,
+              };
+            }
+
+            navigation.navigate('Detalle', params);
           }
         }}
         onRemoveBeverage={onRemoveBeverage}

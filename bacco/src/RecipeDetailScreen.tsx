@@ -95,6 +95,7 @@ const RecipeDetailScreen = () => {
                   navigation.navigate('Detalle', {
                     beverage: beverage.beverage,
                     navBarTitle: 'Detalle de Bebida',
+                    ...(route?.params || {}),
                   });
                 }}
                 rippleColor="rgba(0, 0, 0, .32)">
@@ -145,6 +146,7 @@ const RecipeDetailScreen = () => {
                   navigation.navigate('Detalle', {
                     ingredient: ingredient.ingredient,
                     navBarTitle: 'Detalle de Ingrediente',
+                    ...(route?.params || {}),
                   });
                 }}
                 rippleColor="rgba(0, 0, 0, .32)">

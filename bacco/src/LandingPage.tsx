@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {StyleSheet, View, ImageBackground, Text, Image} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useCameraPermission} from 'react-native-vision-camera';
 import LandingCard from './LandingCard';
 
@@ -9,17 +9,19 @@ const {useCallback} = React;
 
 const LandingPage = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  console.log('route?.params: ', route?.params);
   const {hasPermission, requestPermission} = useCameraPermission();
   const handlePressingScanButton = useCallback(async () => {
     if (hasPermission) {
-      navigation.navigate('Camara');
+      navigation.navigate('Camara', route?.params);
     } else {
       const permissionWasGranted = await requestPermission();
       if (permissionWasGranted) {
-        navigation.navigate('Camara');
+        navigation.navigate('Camara', route?.params);
       }
     }
-  }, [hasPermission, navigation, requestPermission]);
+  }, [hasPermission, navigation, requestPermission, route?.params]);
 
   return (
     <SafeAreaView style={styles.container}>
