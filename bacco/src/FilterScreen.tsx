@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Chip, Divider, Icon, Text, TouchableRipple} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -62,6 +62,38 @@ const FilterScreen = () => {
         : 1;
     });
 
+  const recipesIngredients = useMemo(() => {
+    return recipes.flatMap(
+      recipe =>
+        recipe.ingredients?.map(ingredient =>
+          ingredient.ingredient.name.toLowerCase(),
+        ) || [],
+    );
+  }, [recipes]);
+
+  const recipesBeverages = useMemo(() => {
+    return recipes.flatMap(
+      recipe =>
+        recipe.beverages?.map(beverage =>
+          beverage.beverage.name.toLowerCase(),
+        ) || [],
+    );
+  }, [recipes]);
+
+  const shouldDisableIngredient = useCallback(
+    ingredient => {
+      return !recipesIngredients.includes(ingredient);
+    },
+    [recipesIngredients],
+  );
+
+  const shouldDisableBeverage = useCallback(
+    ingredient => {
+      return !recipesBeverages.includes(ingredient);
+    },
+    [recipesBeverages],
+  );
+
   return (
     <View
       style={{
@@ -94,6 +126,7 @@ const FilterScreen = () => {
         {ingredients.map(ingredient => (
           <Chip
             key={ingredient}
+            disabled={shouldDisableIngredient(ingredient)}
             mode="flat"
             style={styles.buttonWrapper}
             onPress={() => {
@@ -121,6 +154,7 @@ const FilterScreen = () => {
         {beverages.map(beverage => (
           <Chip
             key={beverage}
+            disabled={shouldDisableBeverage(beverage)}
             mode="flat"
             style={styles.buttonWrapper}
             onPress={() => {
