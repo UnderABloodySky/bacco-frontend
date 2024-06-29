@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {Card, FAB, Icon, TouchableRipple} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -179,9 +179,9 @@ const RecipesScreen = () => {
   const navigation = useNavigation();
 
   // Access navigation params from route.params
-  const {beverages, ingredients, recipes} = route.params;
+  const {beverages, ingredients, recipes, filteredRecipes} = route.params;
 
-  const sortedRecipes = recipes
+  const sortedRecipes = (filteredRecipes || recipes)
     .map(recipe => {
       const beveragesTotal = recipe.beverages?.length || 0;
       const beveragesActual =
@@ -227,7 +227,7 @@ const RecipesScreen = () => {
         : 1;
     });
 
-  return recipes ? (
+  return filteredRecipes || recipes ? (
     <FlatList
       data={sortedRecipes}
       style={styles.recipeList}

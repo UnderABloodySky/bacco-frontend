@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Chip, Divider, Icon, Text, TouchableRipple} from 'react-native-paper';
+import {Button, Chip, Divider, Icon, Text} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 // @ts-ignore
 import capitalize from 'lodash/capitalize';
@@ -10,57 +10,16 @@ const FilterScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
 
+  const initialSelectedIngredients = route?.params?.selectedIngredients || [];
+  const initialSelectedBeverages = route?.params?.selectedBeverages || [];
+  const initialRecipeSearchText = route?.params?.recipeSearchText || '';
+
+  const [selectedIngredients, setSelectedIngredients] = useState(initialSelectedIngredients);
+  const [selectedBeverages, setSelectedBeverages] = useState(initialSelectedBeverages);
+  const [recipeSearchText, setRecipeSearchText] = useState(initialRecipeSearchText);
+
   // Access navigation params from route.params
   const {beverages, ingredients, recipes} = route.params;
-  console.log('🎁 🎁 beverages: ', beverages);
-  console.log('🎁 🎁🎁ingredients: ', ingredients);
-  console.log('🎁🎁 🎁recipes: ', recipes);
-
-  const sortedRecipes = recipes
-    .map(recipe => {
-      const beveragesTotal = recipe.beverages?.length || 0;
-      const beveragesActual =
-        recipe.beverages?.filter(beverage =>
-          beverages.includes(beverage?.beverage?.name?.toLowerCase()),
-        )?.length || 0;
-      const beveragesMapped = recipe.beverages
-        ?.map(beverage => ({
-          ...beverage,
-          matched: beverages.includes(beverage?.beverage?.name?.toLowerCase()),
-        }))
-        .sort(beverageA => (beverageA.matched ? 1 : -1));
-      const ingredientsTotal = recipe.ingredients?.length || 0;
-      const ingredientsActual =
-        recipe.ingredients?.filter(ingredient =>
-          ingredients.includes(ingredient?.ingredient?.name?.toLowerCase()),
-        )?.length || 0;
-      const ingredientsMapped = recipe.ingredients
-        ?.map(ingredient => ({
-          ...ingredient,
-          matched: ingredients.includes(
-            ingredient?.ingredient?.name?.toLowerCase(),
-          ),
-        }))
-        .sort(ingredientA => (ingredientA.matched ? 1 : -1));
-      return {
-        ...recipe,
-        beverages: beveragesMapped,
-        ingredients: ingredientsMapped,
-        beveragesTotal,
-        beveragesActual,
-        ingredientsTotal,
-        ingredientsActual,
-      };
-    })
-    .sort((recipeA, recipeB) => {
-      const recipeATotal = recipeA.beveragesTotal + recipeA.ingredientsTotal;
-      const recipeBTotal = recipeB.beveragesTotal + recipeB.ingredientsTotal;
-      const recipeAActual = recipeA.beveragesActual + recipeA.ingredientsActual;
-      const recipeBActual = recipeB.beveragesActual + recipeB.ingredientsActual;
-      return recipeBTotal - recipeBActual > recipeATotal - recipeAActual
-        ? -1
-        : 1;
-    });
 
   const recipesIngredients = useMemo(() => {
     return recipes.flatMap(
@@ -80,19 +39,87 @@ const FilterScreen = () => {
     );
   }, [recipes]);
 
-  const shouldDisableIngredient = useCallback(
+  const isIngredientDisabled = useCallback(
     ingredient => {
       return !recipesIngredients.includes(ingredient);
     },
     [recipesIngredients],
   );
 
-  const shouldDisableBeverage = useCallback(
+  const isBeverageDisabled = useCallback(
     ingredient => {
       return !recipesBeverages.includes(ingredient);
     },
     [recipesBeverages],
   );
+
+  const isIngredientSelected = useCallback(
+    ingredient => selectedIngredients.includes(ingredient),
+    [selectedIngredients],
+  );
+
+  const isBeverageSelected = useCallback(
+    beverage => selectedBeverages.includes(beverage),
+    [selectedBeverages],
+  );
+
+  const toggleIngredientSelection = useCallback(
+    ingredient => {
+      setSelectedIngredients(prevSelectedIngredients => {
+        if (prevSelectedIngredients.includes(ingredient)) {
+          return prevSelectedIngredients.filter(
+            selectedIngredient => selectedIngredient !== ingredient,
+          );
+        }
+        return [...prevSelectedIngredients, ingredient];
+      });
+    },
+    [setSelectedIngredients],
+  );
+
+  const toggleBeverageSelection = useCallback(
+    beverage => {
+      setSelectedBeverages(prevSelectedBeverages => {
+        if (prevSelectedBeverages.includes(beverage)) {
+          return prevSelectedBeverages.filter(
+            selectedBeverage => selectedBeverage !== beverage,
+          );
+        }
+        return [...prevSelectedBeverages, beverage];
+      });
+    },
+    [setSelectedBeverages],
+  );
+
+  const filteredRecipes = useMemo(() => {
+    const matchingRecipes = recipes.filter(recipe => {
+      const hasMatchingIngredient = recipe.ingredients?.some(ingredient =>
+        selectedIngredients.includes(ingredient.ingredient.name.toLowerCase()),
+      );
+      const hasMatchingBeverage = recipe.beverages?.some(beverage =>
+        selectedBeverages.includes(beverage.beverage.name.toLowerCase()),
+      );
+      return (
+        (hasMatchingIngredient || hasMatchingBeverage) &&
+        recipe.name.toLowerCase().includes(recipeSearchText.toLowerCase())
+      );
+    });
+    // if (navigation) {
+    //   navigation.setParams({
+    //     selectedIngredients,
+    //     selectedBeverages,
+    //     recipeSearchText,
+    //     filteredRecipes: matchingRecipes,
+    //   });
+    // }
+    return matchingRecipes;
+  }, [
+    // navigation,
+    recipes,
+    recipeSearchText,
+    selectedBeverages,
+    selectedIngredients,
+  ]);
 
   return (
     <View
@@ -103,11 +130,26 @@ const FilterScreen = () => {
       }}>
       <Searchbox
         placeholder="Busca recetas por su nombre"
-        onChangeText={text => {
-          console.log('deberia buscar recetas a partir de este nombre: ', text);
-        }}
-        text={'asdfgh'}
+        onChangeText={setRecipeSearchText}
+        text={recipeSearchText}
       />
+      <View style={{marginTop: 10}}>
+        <Text variant="labelLarge">Resultado:</Text>
+        {
+          <View style={[styles.container]}>
+            {filteredRecipes.map(recipe => (
+              <View
+                key={recipe.id}
+                style={[styles.buttonWrapper, {backgroundColor: '#F0E2CA99'}]}>
+                <Icon source="script-text-outline" size={25} />
+                <Text variant="labelSmall" numberOfLines={1}>
+                  {recipe.name}
+                </Text>
+              </View>
+            ))}
+          </View>
+        }
+      </View>
       <Divider
         bold
         style={{
@@ -126,11 +168,11 @@ const FilterScreen = () => {
         {ingredients.map(ingredient => (
           <Chip
             key={ingredient}
-            disabled={shouldDisableIngredient(ingredient)}
-            mode="flat"
+            disabled={isIngredientDisabled(ingredient)}
+            selected={isIngredientSelected(ingredient)}
             style={styles.buttonWrapper}
             onPress={() => {
-              console.log('deberia filtrar por este ingrediente: ', ingredient);
+              toggleIngredientSelection(ingredient);
             }}>
             {capitalize(ingredient)}
           </Chip>
@@ -154,16 +196,31 @@ const FilterScreen = () => {
         {beverages.map(beverage => (
           <Chip
             key={beverage}
-            disabled={shouldDisableBeverage(beverage)}
-            mode="flat"
+            disabled={isBeverageDisabled(beverage)}
+            selected={isBeverageSelected(beverage)}
             style={styles.buttonWrapper}
             onPress={() => {
-              console.log('deberia filtrar por este beverage: ', beverage);
+              toggleBeverageSelection(beverage);
             }}>
             {capitalize(beverage)}
           </Chip>
         ))}
       </View>
+      <Button
+        style={{marginTop: 25}}
+        mode="contained"
+        onPress={() => {
+          navigation.navigate('Recetas', {
+            ...(route?.params || {}),
+            selectedIngredients,
+            selectedBeverages,
+            recipeSearchText,
+            filteredRecipes,
+            navBarTitle: 'Resultado de Recetas',
+          });
+        }}>
+        Confirmar filtrado
+      </Button>
     </View>
   );
 };
