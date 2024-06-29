@@ -91,13 +91,16 @@ export default function LoginForm() {
           <Switch
             value={click}
             onValueChange={setClick}
-            trackColor={{true: 'green', false: 'gray'}}
+            trackColor={{true: '#F0E2CA', false: 'gray'}}
+            thumbColor={click ? '#F0E2CA' : 'gray'}
           />
           <Text style={styles.rememberText}>Recuerdame</Text>
         </View>
         <View>
           <Pressable onPress={() => Alert.alert('Forget Password!')}>
-            <Text style={styles.forgetText}>Olvidaste la contraseña?</Text>
+            <Text style={[styles.forgetText, styles.linkText]}>
+              Olvidaste la contraseña?
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -107,7 +110,7 @@ export default function LoginForm() {
           style={[styles.button, !isFormValid() && styles.buttonDisabled]}
           onPress={handleLogin}
           disabled={!isFormValid()}>
-          <Text style={styles.buttonText}>Bienvenido</Text>
+          <Text style={styles.buttonText}>Login</Text>
         </Pressable>
         <Text style={styles.optionsText}>O logueate con</Text>
       </View>
@@ -123,14 +126,14 @@ export default function LoginForm() {
         style={{
           flexDirection: 'row',
         }}>
-        <Text style={styles.footerText}>¿Todavia no tenes una cuenta?</Text>
+        <Text style={styles.footerText}>¿Todavia no tenes una cuenta? </Text>
         <Pressable
           hitSlop={10}
           onPress={() => {
             // @ts-ignore
             navigation.navigate('Register');
           }}>
-          <Text style={styles.signup}> Registrate!</Text>
+          <Text style={[styles.signup, styles.linkText]}>  Registrate!</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -139,6 +142,7 @@ export default function LoginForm() {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#F7F3F9',
     alignItems: 'center',
     paddingTop: 20,
   },
@@ -152,7 +156,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     textAlign: 'center',
     paddingVertical: 40,
-    color: 'red',
+    color: '#03071E',
   },
   inputView: {
     gap: 15,
@@ -163,12 +167,14 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     paddingHorizontal: 20,
-    borderColor: 'red',
     borderWidth: 1,
     borderRadius: 7,
+    borderColor: '#D2C3C3',
+    backgroundColor: '#FFFFFF',
+    color: '#03071E',
   },
   errorText: {
-    color: 'red',
+    color: '#D00000',
     marginBottom: 10,
   },
   rememberView: {
@@ -178,6 +184,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     marginBottom: 8,
+    color: '#03071E',
   },
   switch: {
     flexDirection: 'row',
@@ -190,12 +197,12 @@ const styles = StyleSheet.create({
   },
   forgetText: {
     fontSize: 11,
-    color: 'red',
+    color: '#03071E',
   },
   button: {
-    backgroundColor: 'red',
+    backgroundColor: '#03071E',
+    borderColor: '#F0E2CA',
     height: 45,
-    borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 5,
     alignItems: 'center',
@@ -216,7 +223,7 @@ const styles = StyleSheet.create({
   optionsText: {
     textAlign: 'center',
     paddingVertical: 10,
-    color: 'gray',
+    color: '#03071E',
     fontSize: 13,
     marginBottom: 6,
   },
@@ -233,10 +240,15 @@ const styles = StyleSheet.create({
   },
   footerText: {
     textAlign: 'center',
-    color: 'gray',
+    color: '#03071E',
   },
   signup: {
-    color: 'red',
+    color: '#03071E',
     fontSize: 13,
+  },
+
+  linkText: {
+    color: '#1F4287',
+    textDecorationLine: 'underline',
   },
 });

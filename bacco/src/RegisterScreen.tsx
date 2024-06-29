@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   Alert,
   Image,
@@ -25,7 +25,6 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isAdult, setIsAdult] = useState(false);
-  const [acceptPrivacyPolicy, setAcceptPrivacyPolicy] = useState(false);
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -81,8 +80,7 @@ export default function RegisterScreen() {
       password.trim().length < 8 ||
       password.trim().length > 16 ||
       password !== confirmPassword ||
-      !isAdult ||
-      !acceptPrivacyPolicy
+      !isAdult
     ) {
       Alert.alert('Por favor, revisa los campos ingresados.');
       return;
@@ -118,8 +116,7 @@ export default function RegisterScreen() {
       password.trim().length >= 8 &&
       password.trim().length <= 16 &&
       password === confirmPassword &&
-      isAdult &&
-      acceptPrivacyPolicy
+      isAdult
     );
   };
 
@@ -186,23 +183,10 @@ export default function RegisterScreen() {
             <Switch
               value={isAdult}
               onValueChange={setIsAdult}
-              trackColor={{true: 'green', false: 'gray'}}
+              trackColor={{true: '#F0E2CA', false: 'gray'}}
+              thumbColor={isAdult ? '#F0E2CA' : 'gray'}
             />
             <Text style={styles.rememberText}>Soy mayor de edad</Text>
-          </View>
-          <View style={styles.switch}>
-            <Switch
-              value={acceptPrivacyPolicy}
-              onValueChange={setAcceptPrivacyPolicy}
-              trackColor={{true: 'green', false: 'gray'}}
-            />
-            <Text style={styles.rememberText}>
-              <Pressable onPress={openTermsAndConditions}>
-                <Text style={[styles.rememberText, styles.linkText]}>
-                  Acepto términos y condiciones
-                </Text>
-              </Pressable>
-            </Text>
           </View>
         </View>
       </View>
@@ -237,7 +221,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: 20,
+    paddingTop: 1,
   },
   image: {
     height: 160,
@@ -249,7 +233,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     textAlign: 'center',
     paddingVertical: 20,
-    color: 'red',
+    color: '#03071E',
   },
   inputView: {
     width: '100%',
@@ -259,10 +243,12 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     paddingHorizontal: 20,
-    borderColor: 'red',
+    borderColor: '#D2C3C3',
     borderWidth: 1,
     borderRadius: 7,
     marginBottom: 15,
+    backgroundColor: '#FFFFFF',
+    color: '#03071E',
   },
   rememberView: {
     width: '100%',
@@ -289,12 +275,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   linkText: {
-    color: 'blue',
+    color: '#03071E',
     textDecorationLine: 'underline',
     marginLeft: 5,
   },
   button: {
-    backgroundColor: 'red',
+    backgroundColor: '#03071E',
     height: 45,
     width: '80%',
     borderColor: 'gray',
@@ -317,7 +303,7 @@ const styles = StyleSheet.create({
   },
   optionsText: {
     textAlign: 'center',
-    color: 'gray',
+    color: '#03071E',
     fontSize: 13,
     marginBottom: 6,
   },
@@ -334,10 +320,10 @@ const styles = StyleSheet.create({
   },
   footerText: {
     textAlign: 'center',
-    color: 'gray',
+    color: '#03071E',
   },
   signup: {
-    color: 'red',
+    color: '#03071E',
     fontSize: 13,
   },
   errorText: {
