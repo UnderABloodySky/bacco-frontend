@@ -18,6 +18,7 @@ export default function NavBar({navigation, route, back = false}) {
     () => route?.params?.ingredients || [],
     [route?.params],
   );
+  const recipes = useMemo(() => route?.params?.recipes || [], [route?.params]);
   const getRecipesButtonVisible = beverages?.length || ingredients?.length;
 
   const getRecipes = useCallback(async () => {
@@ -574,6 +575,20 @@ export default function NavBar({navigation, route, back = false}) {
           <>
             <Appbar.BackAction onPress={navigation.goBack} color="white" />
             <Appbar.Content title={title} color="white" />
+            {title === 'Resultado de Recetas' && (
+              <Appbar.Action
+                color="white"
+                icon="filter-outline"
+                onPress={() => {
+                  navigation.navigate('Filtro', {
+                    beverages: beverages,
+                    ingredients: ingredients,
+                    recipes: recipes,
+                    navBarTitle: 'Filtro de Recetas',
+                  });
+                }}
+              />
+            )}
             {title === 'Camara' && getRecipesButtonVisible ? (
               <FloatingBeveragesButton onPress={getRecipes} />
             ) : null}

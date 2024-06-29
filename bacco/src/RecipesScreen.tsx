@@ -14,13 +14,82 @@ type FloatingCountBadgeProps = {
   isIngredientsBadge?: boolean;
 };
 
-const FloatingCountBadge = ({
+const FloatingBadge = ({
   actual,
   total,
   entities,
   isIngredientsBadge = false,
 }: FloatingCountBadgeProps) => {
   const [isHintVisible, setIsHintVisible] = useState(false);
+  const [isIconsDisplay, setIsIconsDisplay] = useState(false);
+
+  const icon = isIngredientsBadge ? 'fruit-cherries' : 'glass-cocktail';
+
+  if (isIconsDisplay) {
+    const missingAmount = total - actual;
+    return (
+      <View
+        style={[
+          {
+            position: 'absolute',
+            top: 11,
+            left: 12,
+            flexDirection: 'row',
+            zIndex: 10,
+          },
+          isIngredientsBadge && styles.longPressIconForIngredients,
+        ]}>
+        <FAB
+          icon="close-circle-outline"
+          color="white"
+          customSize={35}
+          onPress={() => {
+            setIsIconsDisplay(false);
+          }}
+          style={[
+            {
+              backgroundColor: '#03071E55',
+              marginRight: 15,
+              borderRadius: 25,
+            },
+          ]}
+        />
+        {Array.from({length: missingAmount}, (_, i) => (
+          <View
+            key={`${i}-missing`}
+            style={{
+              padding: 5,
+              marginRight: 5,
+              backgroundColor: 'rgba(128, 128, 128, 0.8)',
+              borderRadius: 25,
+            }}>
+            <Icon
+              source={`${icon}-off`}
+              color="rgba(255, 255, 255, 0.85)"
+              size={25}
+            />
+          </View>
+        ))}
+        <View
+          style={{
+            width: missingAmount ? 12 : 0,
+          }}
+        />
+        {Array.from({length: actual}, (_, i) => (
+          <View
+            key={`${i}-actual`}
+            style={{
+              padding: 5,
+              marginRight: 5,
+              backgroundColor: 'rgba(128, 128, 128, 1)',
+              borderRadius: 25,
+            }}>
+            <Icon source={`${icon}`} color="rgba(255, 255, 255, 1)" size={25} />
+          </View>
+        ))}
+      </View>
+    );
+  }
 
   const missingEntities = entities
     ?.filter(entity => !entity.matched)
@@ -37,7 +106,6 @@ const FloatingCountBadge = ({
       ),
     );
 
-  const icon = isIngredientsBadge ? 'fruit-cherries' : 'glass-cocktail';
   const label = `${actual}/${total}`;
   const hasAll = actual === total;
   return (
@@ -55,6 +123,9 @@ const FloatingCountBadge = ({
         label={label}
         color="#111"
         customSize={35}
+        onPress={() => {
+          setIsIconsDisplay(true);
+        }}
         onLongPress={() => {
           if (!isHintVisible) {
             setIsHintVisible(true);
@@ -173,12 +244,12 @@ const RecipesScreen = () => {
           }}
           rippleColor="rgba(0, 0, 0, .32)">
           <>
-            <FloatingCountBadge
+            <FloatingBadge
               actual={recipe.beveragesActual}
               total={recipe.beveragesTotal}
               entities={recipe.beverages}
             />
-            <FloatingCountBadge
+            <FloatingBadge
               actual={recipe.ingredientsActual}
               total={recipe.ingredientsTotal}
               entities={recipe.ingredients}
