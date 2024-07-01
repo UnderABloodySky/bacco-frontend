@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {Card, FAB, Icon, TouchableRipple} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -6,6 +6,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 // @ts-ignore
 import capitalize from 'lodash/capitalize';
+import RecipesFilter from './RecipesFilter';
 
 type FloatingCountBadgeProps = {
   actual: number;
@@ -165,7 +166,7 @@ const FloatingBadge = ({
               color: 'white',
               fontSize: 16,
               display: matchedEntities.length ? 'flex' : 'none',
-            }}>{`Tenes: ${matchedEntities.join(', ')}`}</Text>
+            }}>{`Actuales: ${matchedEntities.join(', ')}`}</Text>
         </View>
       )}
     </>
@@ -179,7 +180,8 @@ const RecipesScreen = () => {
   const navigation = useNavigation();
 
   // Access navigation params from route.params
-  const {beverages, ingredients, recipes, filteredRecipes} = route.params;
+  const {beverages, filteredRecipes, ingredients, recipes, showingFilters} =
+    route.params;
 
   const sortedRecipes = (filteredRecipes || recipes)
     .map(recipe => {
@@ -228,74 +230,80 @@ const RecipesScreen = () => {
     });
 
   return filteredRecipes || recipes ? (
-    <FlatList
-      data={sortedRecipes}
-      style={styles.recipeList}
-      ListFooterComponent={Footer}
-      renderItem={({item: recipe}) => (
-        <TouchableRipple
-          borderless
-          style={styles.recipeContainer}
-          onPress={() => {
-            navigation.navigate('Receta', {
-              ...(route?.params || {}),
-              recipe: recipe,
-              navBarTitle: 'Detalle de Receta',
-            });
-          }}
-          rippleColor="rgba(0, 0, 0, .32)">
-          <>
-            <FloatingBadge
-              actual={recipe.beveragesActual}
-              total={recipe.beveragesTotal}
-              entities={recipe.beverages}
-            />
-            <FloatingBadge
-              actual={recipe.ingredientsActual}
-              total={recipe.ingredientsTotal}
-              entities={recipe.ingredients}
-              isIngredientsBadge
-            />
-            <Card contentStyle={styles.recipeCard}>
-              <Card.Cover src={recipe.imagePath} />
-              <Card.Title
-                title={recipe.name}
-                titleVariant="titleLarge"
-                titleStyle={styles.recipeText}
+    <>
+      <RecipesFilter visible={showingFilters} />
+      <FlatList
+        data={sortedRecipes}
+        style={styles.recipeList}
+        ListFooterComponent={Footer}
+        renderItem={({item: recipe}) => (
+          <TouchableRipple
+            borderless
+            style={styles.recipeContainer}
+            onPress={() => {
+              navigation.navigate('Receta', {
+                ...(route?.params || {}),
+                recipe: recipe,
+                navBarTitle: 'Detalle de Receta',
+              });
+            }}
+            rippleColor="rgba(0, 0, 0, .32)">
+            <>
+              <FloatingBadge
+                actual={recipe.beveragesActual}
+                total={recipe.beveragesTotal}
+                entities={recipe.beverages}
               />
-              <Card.Content>
-                <MaskedView
-                  maskElement={
-                    <Text
-                      numberOfLines={3}
-                      style={[
-                        styles.recipeDescriptionText,
-                        styles.descriptionMask,
-                      ]}>
-                      {recipe.description}
-                    </Text>
-                  }>
-                  <LinearGradient
-                    colors={[
-                      'rgba(255, 255, 255, 0.2)',
-                      'rgba(255, 255, 255, 1)',
-                    ]}
-                    start={{x: 0, y: 1}}
-                    end={{x: 0, y: 0}}>
-                    <Text
-                      numberOfLines={3}
-                      style={[styles.recipeDescriptionText, styles.invisible]}>
-                      {recipe.description}
-                    </Text>
-                  </LinearGradient>
-                </MaskedView>
-              </Card.Content>
-            </Card>
-          </>
-        </TouchableRipple>
-      )}
-      keyExtractor={recipe => recipe.id.toString()}
-    />
+              <FloatingBadge
+                actual={recipe.ingredientsActual}
+                total={recipe.ingredientsTotal}
+                entities={recipe.ingredients}
+                isIngredientsBadge
+              />
+              <Card contentStyle={styles.recipeCard}>
+                <Card.Cover src={recipe.imagePath} />
+                <Card.Title
+                  title={recipe.name}
+                  titleVariant="titleLarge"
+                  titleStyle={styles.recipeText}
+                />
+                <Card.Content>
+                  <MaskedView
+                    maskElement={
+                      <Text
+                        numberOfLines={3}
+                        style={[
+                          styles.recipeDescriptionText,
+                          styles.descriptionMask,
+                        ]}>
+                        {recipe.description}
+                      </Text>
+                    }>
+                    <LinearGradient
+                      colors={[
+                        'rgba(255, 255, 255, 0.2)',
+                        'rgba(255, 255, 255, 1)',
+                      ]}
+                      start={{x: 0, y: 1}}
+                      end={{x: 0, y: 0}}>
+                      <Text
+                        numberOfLines={3}
+                        style={[
+                          styles.recipeDescriptionText,
+                          styles.invisible,
+                        ]}>
+                        {recipe.description}
+                      </Text>
+                    </LinearGradient>
+                  </MaskedView>
+                </Card.Content>
+              </Card>
+            </>
+          </TouchableRipple>
+        )}
+        keyExtractor={recipe => recipe.id.toString()}
+      />
+    </>
   ) : null;
 };
 

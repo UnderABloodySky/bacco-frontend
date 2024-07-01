@@ -117,7 +117,7 @@ function CameraScreen(): React.JSX.Element {
         headers: headers,
         body: formData,
       };
-      await fetch('http://localhost:8080/beverages/retrain', request);
+      // await fetch('http://localhost:8080/beverages/retrain', request);
     },
     [photoLocalPath],
   );
@@ -131,8 +131,88 @@ function CameraScreen(): React.JSX.Element {
       method: 'GET',
       headers: headers,
     };
-    const response = await fetch(url, request);
-    const bodyResponse = await response.json();
+    // const response = await fetch(url, request);
+    // const bodyResponse = await response.json();
+    // console.log('searchBeverages, bodyResponse: ', bodyResponse);
+    const bodyResponse = [
+      {
+        description: 'El sabor auténtico de Cordoba y Argentina',
+        id: 0,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'FERNET',
+      },
+      {
+        description: 'Refrescante y versátil',
+        id: 1,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'TONICA',
+      },
+      {
+        description: 'La chispa que necesitas',
+        id: 2,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'COCACOLA',
+      },
+      {
+        description: 'La chispa que necesitas',
+        id: 3,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'GIN',
+      },
+      {
+        description: 'Una aventura caribeña en tu vaso',
+        id: 4,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'RON',
+      },
+      {
+        description: 'La tradición en cada burbuja',
+        id: 5,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'CERVEZA',
+      },
+      {
+        description: 'El toque perfecto antes de la cena',
+        id: 6,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'APERITIVO',
+      },
+      {
+        description: 'Dulce tentación en cada gota',
+        id: 7,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'LICOR',
+      },
+      {
+        description: 'El espíritu italiano en tu copa',
+        id: 8,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'GANCIA',
+      },
+      {
+        description: 'Destilado de distinción y carácter',
+        id: 9,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'WHISKEY',
+      },
+      {
+        description: 'Elegancia embotellada',
+        id: 12,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/beverage/beverage.jpg',
+        name: 'VINO',
+      },
+    ];
     const responseBeverages: string[] = [
       ...new Set<string>(
         bodyResponse
@@ -155,9 +235,123 @@ function CameraScreen(): React.JSX.Element {
       method: 'GET',
       headers: headers,
     };
-    const response = await fetch(url, request);
-    const bodyResponse = await response.json();
+    // const response = await fetch(url, request);
+    // const bodyResponse = await response.json();
 
+    const bodyResponse = [
+      {
+        description: 'Toque de intensidad y sabor',
+        id: 13,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'PIMIENTA',
+      },
+      {
+        description: 'Frescura garantizada en cada sorbo',
+        id: 14,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'HIELO',
+      },
+      {
+        description: 'Equilibrio perfecto para tu paladar',
+        id: 15,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'SAL',
+      },
+      {
+        description: 'Suavidad inigualable en cada trago',
+        id: 16,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'LECHE',
+      },
+      {
+        description: 'Dulzura exquisita para deleitar tus sentidos',
+        id: 17,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'AZUCAR',
+      },
+      {
+        description: 'Frescor natural y refrescante',
+        id: 18,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'MENTA',
+      },
+      {
+        description: 'Toque picante y revitalizante',
+        id: 19,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'JENGIBRE',
+      },
+      {
+        description: 'Refrescante y lleno de vitalidad',
+        id: 20,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'POMELO',
+      },
+      {
+        description: 'Acidez refrescante y cítrica',
+        id: 27,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'LIMON',
+      },
+      {
+        description: 'Dulzura cítrica y energizante',
+        id: 28,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'NARANJA',
+      },
+      {
+        description: 'Refrescante y crujiente',
+        id: 29,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'PEPINO',
+      },
+      {
+        description: 'Dulzura jugosa y deliciosa',
+        id: 30,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'FRUTILLA',
+      },
+      {
+        description: 'Toque mediterráneo de autenticidad',
+        id: 31,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'ACEITUNAS',
+      },
+      {
+        description: 'Vibrante y lleno de sabor',
+        id: 53,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'FRUTOS ROJOS',
+      },
+      {
+        description: 'Antioxidante natural y exquisito sabor',
+        id: 55,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'ARANDANOS',
+      },
+      {
+        description: 'Roja como la sangre',
+        id: 59,
+        imagePath:
+          'https://raw.githubusercontent.com/UnderABloodySky/bacco-backend/dev/assets/imgs/ingredient/ingredient.jpg',
+        name: 'HIBISCUS',
+      },
+    ];
     // console.log('searchIngredients, bodyResponse: ', bodyResponse);
     const responseIngredients: string[] = [
       ...new Set<string>(
@@ -198,13 +392,15 @@ function CameraScreen(): React.JSX.Element {
         headers: headers,
         body: formData,
       };
-      const response = await fetch(
-        'http://localhost:8080/imgs/upload',
-        request,
-      );
-      let responseText = await response.text();
-      const jsonResponse = JSON.parse(responseText);
-      responseText = jsonResponse.message;
+      // const response = await fetch(
+      //   'http://localhost:8080/imgs/upload',
+      //   request,
+      // );
+      // let responseText = await response.text();
+      // const jsonResponse = JSON.parse(responseText);
+      // responseText = jsonResponse.message;
+      // console.log('takePicture, responseText: ', responseText);
+      const responseText = 'whiskey';
       const scannedSuccessfully = !responseText.includes(' ');
       if (scannedSuccessfully) {
         setBannerMessage(`Se identifico la bebida: ${responseText}`);

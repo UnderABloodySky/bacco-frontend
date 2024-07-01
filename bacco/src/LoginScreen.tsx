@@ -10,8 +10,9 @@ import {
   TextInput,
   View,
 } from 'react-native';
-
 import {useNavigation} from '@react-navigation/native';
+// @ts-ignore
+import after from 'lodash/after';
 const logo = require('../assets/images/logo/output-onlinepngtools-light.png');
 const google = require('../assets/images/logos/google.png');
 const facebook = require('../assets/images/logos/facebook.png');
@@ -54,10 +55,18 @@ export default function LoginForm() {
     }
   };
 
+  const goToCamera = after(5, () => {
+    navigation.navigate('Camara');
+  });
+
   return (
     <SafeAreaView style={styles.container}>
-      <Image source={logo} style={styles.image} resizeMode="contain" />
-      <Text style={styles.title}>Bienvenido!</Text>
+      <View>
+        <Pressable onPress={goToCamera}>
+          <Image source={logo} style={styles.image} resizeMode="contain" />
+        </Pressable>
+        <Text style={styles.title}>Bacco</Text>
+      </View>
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
@@ -82,10 +91,10 @@ export default function LoginForm() {
           autoCorrect={false}
           autoCapitalize="none"
         />
+        {errorMessage ? (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        ) : null}
       </View>
-      {errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
-      ) : null}
       <View style={styles.rememberView}>
         <View style={styles.switch}>
           <Switch
@@ -97,7 +106,7 @@ export default function LoginForm() {
           <Text style={styles.rememberText}>Recuerdame</Text>
         </View>
         <View>
-          <Pressable onPress={() => Alert.alert('Forget Password!')}>
+          <Pressable disabled onPress={() => Alert.alert('Forget Password!')}>
             <Text style={[styles.forgetText, styles.linkText]}>
               Olvidaste la contraseña?
             </Text>
@@ -112,29 +121,16 @@ export default function LoginForm() {
           disabled={!isFormValid()}>
           <Text style={styles.buttonText}>Login</Text>
         </Pressable>
+      </View>
+
+      <View>
         <Text style={styles.optionsText}>O logueate con</Text>
-      </View>
-
-      <View style={styles.mediaIcons}>
-        <Image source={google} style={styles.icons} />
-        <Image source={instagram} style={styles.icons} />
-        <Image source={facebook} style={styles.icons} />
-        <Image source={tiktok} style={styles.icons} />
-      </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-        }}>
-        <Text style={styles.footerText}>¿Todavia no tenes una cuenta? </Text>
-        <Pressable
-          hitSlop={10}
-          onPress={() => {
-            // @ts-ignore
-            navigation.navigate('Register');
-          }}>
-          <Text style={[styles.signup, styles.linkText]}>  Registrate!</Text>
-        </Pressable>
+        <View style={styles.mediaIcons}>
+          <Image source={google} style={styles.icons} />
+          <Image source={instagram} style={styles.icons} />
+          <Image source={facebook} style={styles.icons} />
+          <Image source={tiktok} style={styles.icons} />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -142,21 +138,21 @@ export default function LoginForm() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F7F3F9',
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingTop: 20,
   },
   image: {
-    height: 200,
-    width: 210,
+    height: 160,
+    width: 170,
   },
   title: {
-    fontSize: 30,
+    fontSize: 40,
     fontWeight: 'bold',
-    textTransform: 'uppercase',
     textAlign: 'center',
-    paddingVertical: 40,
-    color: '#03071E',
+    color: '#D2C3C3',
+    fontFamily: 'sans-serif',
   },
   inputView: {
     gap: 15,
@@ -238,15 +234,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
-  footerText: {
-    textAlign: 'center',
-    color: '#03071E',
-  },
-  signup: {
-    color: '#03071E',
-    fontSize: 13,
-  },
-
   linkText: {
     color: '#1F4287',
     textDecorationLine: 'underline',

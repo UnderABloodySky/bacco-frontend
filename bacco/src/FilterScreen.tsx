@@ -1,7 +1,8 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Chip, Divider, Icon, Text} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 // @ts-ignore
 import capitalize from 'lodash/capitalize';
 import Searchbox from './Searchbox';
@@ -99,9 +100,16 @@ const FilterScreen = () => {
       const hasMatchingBeverage = recipe.beverages?.some(beverage =>
         selectedBeverages.includes(beverage.beverage.name.toLowerCase()),
       );
+      const hasNoSelectedFilters =
+        !selectedIngredients.length && !selectedBeverages.length;
+      const matchesSearchText = recipe.name
+        .toLowerCase()
+        .includes(recipeSearchText.toLowerCase());
       return (
-        (hasMatchingIngredient || hasMatchingBeverage) &&
-        recipe.name.toLowerCase().includes(recipeSearchText.toLowerCase())
+        (hasNoSelectedFilters ||
+          hasMatchingIngredient ||
+          hasMatchingBeverage) &&
+        matchesSearchText
       );
     });
     // if (navigation) {
@@ -122,110 +130,125 @@ const FilterScreen = () => {
   ]);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#D2C3C3',
-        padding: 10,
-      }}>
-      <Searchbox
-        placeholder="Busca recetas por su nombre"
-        onChangeText={setRecipeSearchText}
-        text={recipeSearchText}
-      />
-      <View style={{marginTop: 10}}>
-        <Text variant="labelLarge">Resultado:</Text>
-        {
-          <View style={[styles.container]}>
-            {filteredRecipes.map(recipe => (
-              <View
-                key={recipe.id}
-                style={[styles.buttonWrapper, {backgroundColor: '#F0E2CA99'}]}>
-                <Icon source="script-text-outline" size={25} />
-                <Text variant="labelSmall" numberOfLines={1}>
-                  {recipe.name}
-                </Text>
-              </View>
-            ))}
-          </View>
-        }
-      </View>
-      <Divider
-        bold
-        style={{
-          marginTop: 10,
-          backgroundColor: '#111',
-        }}
-      />
-      <Text
-        variant="titleLarge"
-        style={{
-          marginTop: 10,
-        }}>
-        Filtrar por Ingredientes
-      </Text>
-      <View style={[styles.container]}>
-        {ingredients.map(ingredient => (
-          <Chip
-            key={ingredient}
-            disabled={isIngredientDisabled(ingredient)}
-            selected={isIngredientSelected(ingredient)}
-            style={styles.buttonWrapper}
-            onPress={() => {
-              toggleIngredientSelection(ingredient);
-            }}>
-            {capitalize(ingredient)}
-          </Chip>
-        ))}
-      </View>
-      <Divider
-        bold
-        style={{
-          marginTop: 10,
-          backgroundColor: '#111',
-        }}
-      />
-      <Text
-        variant="titleLarge"
-        style={{
-          marginTop: 10,
-        }}>
-        Filtrar por Bebidas
-      </Text>
-      <View style={[styles.container]}>
-        {beverages.map(beverage => (
-          <Chip
-            key={beverage}
-            disabled={isBeverageDisabled(beverage)}
-            selected={isBeverageSelected(beverage)}
-            style={styles.buttonWrapper}
-            onPress={() => {
-              toggleBeverageSelection(beverage);
-            }}>
-            {capitalize(beverage)}
-          </Chip>
-        ))}
-      </View>
-      <Button
-        style={{marginTop: 25}}
-        mode="contained"
-        onPress={() => {
-          navigation.navigate('Recetas', {
-            ...(route?.params || {}),
-            selectedIngredients,
-            selectedBeverages,
-            recipeSearchText,
-            filteredRecipes,
-            navBarTitle: 'Resultado de Recetas',
-          });
-        }}>
-        Confirmar filtrado
-      </Button>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <Searchbox
+          placeholder="Filtra recetas por su nombre"
+          onChangeText={setRecipeSearchText}
+          text={recipeSearchText}
+        />
+        <Text
+          variant="titleLarge"
+          style={{
+            marginTop: 10,
+            textAlign: 'center',
+          }}>
+          Filtra por Ingredientes
+        </Text>
+        <View style={[styles.listContainer]}>
+          {ingredients.map(ingredient => (
+            <Chip
+              key={ingredient}
+              disabled={isIngredientDisabled(ingredient)}
+              selected={isIngredientSelected(ingredient)}
+              style={styles.buttonWrapper}
+              onPress={() => {
+                toggleIngredientSelection(ingredient);
+              }}>
+              {capitalize(ingredient)}
+            </Chip>
+          ))}
+        </View>
+        <Divider
+          bold
+          style={{
+            marginTop: 10,
+            backgroundColor: '#111',
+          }}
+        />
+        <Text
+          variant="titleLarge"
+          style={{
+            marginTop: 10,
+            textAlign: 'center',
+          }}>
+          Filtra por Bebidas
+        </Text>
+        <View style={[styles.listContainer]}>
+          {beverages.map(beverage => (
+            <Chip
+              key={beverage}
+              disabled={isBeverageDisabled(beverage)}
+              selected={isBeverageSelected(beverage)}
+              style={styles.buttonWrapper}
+              onPress={() => {
+                toggleBeverageSelection(beverage);
+              }}>
+              {capitalize(beverage)}
+            </Chip>
+          ))}
+        </View>
+        <Divider
+          bold
+          style={{
+            marginTop: 10,
+            backgroundColor: '#111',
+          }}
+        />
+        <View style={{marginTop: 10}}>
+          <Text variant="labelLarge">Resultado:</Text>
+          {
+            <View style={[styles.listContainer]}>
+              {filteredRecipes.map(recipe => (
+                <View
+                  key={recipe.id}
+                  style={[
+                    styles.buttonWrapper,
+                    {
+                      flexDirection: 'row',
+                      borderRadius: 20,
+                      padding: 5,
+                      paddingHorizontal: 8,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: '#F0E2CACC',
+                    },
+                  ]}>
+                  <Icon source="script-text-outline" size={25} />
+                  <Text variant="labelSmall" numberOfLines={1}>
+                    {recipe.name}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          }
+        </View>
+        <Button
+          style={{marginTop: 25}}
+          mode="contained"
+          onPress={() => {
+            navigation.navigate('Recetas', {
+              ...(route?.params || {}),
+              selectedIngredients,
+              selectedBeverages,
+              recipeSearchText,
+              filteredRecipes,
+              navBarTitle: 'Resultado de Recetas',
+            });
+          }}>
+          Confirmar filtrado
+        </Button>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#D2C3C3',
+    padding: 10,
+  },
   longPressIcon: {
     position: 'absolute',
     top: 11,
@@ -282,7 +305,7 @@ const styles = StyleSheet.create({
   footer: {
     height: 20,
   },
-  container: {
+  listContainer: {
     // flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -291,7 +314,6 @@ const styles = StyleSheet.create({
     // padding: 10,
   },
   buttonWrapper: {
-    minWidth: '30%', // Adjust the width percentage to fit the number of buttons per row
     margin: 5,
   },
 });
