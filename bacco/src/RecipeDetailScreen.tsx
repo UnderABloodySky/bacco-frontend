@@ -78,8 +78,6 @@ const RecipeDetailScreen = () => {
     };
     const response = await fetch(url, request);
     const bodyResponse = await response.json();
-    console.log('recipe detail, response: ', response);
-    console.log('recipe detail, bodyResponse: ', bodyResponse);
     if (bodyResponse?.comments.length) {
       const mappedCommentsWithUserId = bodyResponse.comments.map(comment => ({
         ...comment,
