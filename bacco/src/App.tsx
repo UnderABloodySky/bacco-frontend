@@ -8,7 +8,6 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import CameraScreen from './CameraScreen';
-import FilterScreen from './FilterScreen';
 import LandingPage from './LandingPage';
 import RecipesScreen from './RecipesScreen';
 import RecipeDetailScreen from './RecipeDetailScreen';
@@ -36,7 +35,6 @@ function App(): React.JSX.Element {
       <Stack.Screen name="Recetas" component={RecipesScreen} />
       <Stack.Screen name="Receta" component={RecipeDetailScreen} />
       <Stack.Screen name="Detalle" component={DetailScreen} />
-      <Stack.Screen name="Filtro" component={FilterScreen} />
       <Stack.Screen
         name="Login"
         component={LoginScreen}

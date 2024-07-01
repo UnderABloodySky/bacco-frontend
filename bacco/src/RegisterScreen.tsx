@@ -96,7 +96,7 @@ export default function RegisterScreen() {
       });
       const result = await response.json();
       if (response.ok) {
-        navigation.navigate('Landing', {
+        navigation.navigate('Camara', {
           ...result,
         });
       } else {

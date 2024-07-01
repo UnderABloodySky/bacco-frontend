@@ -43,11 +43,11 @@ export default function LoginForm() {
       });
       const result = await response.json();
       if (response.ok) {
-        navigation.navigate('Landing', {
+        navigation.navigate('Camara', {
           ...result,
         });
       } else {
-        // TODO: no entra en este caso porque el backend respone con 204 y null en el body (este es el problema, deberia ser un json)
+        // TODO: no entra en este caso porque el backend responde con 204 y null en el body (este es el problema, deberia ser un json)
         setErrorMessage(result.message || 'Usuario o contraseña incorrecta');
       }
     } catch (error) {

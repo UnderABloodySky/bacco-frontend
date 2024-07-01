@@ -41,7 +41,7 @@ const Searchbox = ({
 
   return (
     <Searchbar
-      placeholder={placeholder || 'Busca y selecciona una bebida'}
+      placeholder={placeholder || 'Busca una bebida'}
       onChangeText={handleOnChangeText}
       value={searchQuery}
       inputStyle={searchInputCustomStyle}

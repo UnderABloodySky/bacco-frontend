@@ -40,10 +40,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#03071E',
     borderRadius: 10,
-    marginBottom: 10,
-    paddingHorizontal: 10,
+    marginBottom: 20,
   },
   input: {
     flex: 1,

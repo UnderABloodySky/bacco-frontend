@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import {
   Dimensions,
   Image,
@@ -19,6 +19,9 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 // @ts-ignore
 import capitalize from 'lodash/capitalize';
+
+import Comments from './Comments';
+import {useEffect} from 'react';
 
 type FloatingCountBadgeProps = {
   actual: number;
@@ -60,8 +63,38 @@ const RecipeDetailScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const {recipe} = route.params;
-
   const windowHeight = Dimensions.get('window').height;
+
+  const [comments, setComments] = useState([]);
+
+  const fetchRecipeDetail = async recipeId => {
+    const url = `http://localhost:8080/imgs/recipe/${recipeId}`;
+    const headers = {
+      Accept: 'application/json',
+    };
+    const request = {
+      method: 'GET',
+      headers: headers,
+    };
+    const response = await fetch(url, request);
+    const bodyResponse = await response.json();
+    console.log('recipe detail, response: ', response);
+    console.log('recipe detail, bodyResponse: ', bodyResponse);
+    if (bodyResponse?.comments.length) {
+      const mappedCommentsWithUserId = bodyResponse.comments.map(comment => ({
+        ...comment,
+        userId: comment.user.id,
+      }));
+      setComments(mappedCommentsWithUserId);
+    }
+  };
+
+  useEffect(() => {
+    if (recipe?.id) {
+      fetchRecipeDetail(recipe.id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -177,6 +210,13 @@ const RecipeDetailScreen = () => {
               </TouchableRipple>
             ))}
           </View>
+          <Divider bold />
+          <View style={styles.entityListContainer}>
+            <Text style={styles.entityListHeader}>
+              Comentarios
+            </Text>
+          </View>
+          <Comments comments={comments} />
         </View>
       </ScrollView>
     </SafeAreaView>

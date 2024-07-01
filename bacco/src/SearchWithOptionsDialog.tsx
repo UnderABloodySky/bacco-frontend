@@ -5,8 +5,8 @@
  */
 
 import React from 'react';
-import {ScrollView, StyleSheet, Text} from 'react-native';
-import {Button, Dialog} from 'react-native-paper';
+import {ScrollView, StyleSheet} from 'react-native';
+import {Button, Dialog, IconButton} from 'react-native-paper';
 import Searchbox from './Searchbox';
 
 const {useCallback, useEffect, useState} = React;
@@ -17,7 +17,8 @@ export type SearchWithOptionsDialogProps = {
   onChangeSearch: (text: string) => void;
   onConfirm: (selectedOption: string) => void;
   options: string[];
-  title: string;
+  placeholder?: string;
+  title?: string;
 };
 
 function SearchWithOptionsDialog({
@@ -26,6 +27,7 @@ function SearchWithOptionsDialog({
   onChangeSearch,
   onConfirm,
   options,
+  placeholder,
   title,
 }: SearchWithOptionsDialogProps): React.JSX.Element {
   const [searchedText, setSearchedText] = useState('');
@@ -62,9 +64,13 @@ function SearchWithOptionsDialog({
       visible={isShowingDialog}
       style={styles.dialog}
       onDismiss={dismiss}>
-      <Dialog.Title testID="search-title">{title}</Dialog.Title>
+      {!!title && <Dialog.Title testID="search-title">{title}</Dialog.Title>}
       <Dialog.Content>
-        <Searchbox onChangeText={onChangeSearchText} text={searchedText} />
+        <Searchbox
+          placeholder={placeholder}
+          onChangeText={onChangeSearchText}
+          text={searchedText}
+        />
       </Dialog.Content>
       <Dialog.ScrollArea style={styles.options}>
         <ScrollView>
@@ -87,12 +93,17 @@ function SearchWithOptionsDialog({
       </Dialog.ScrollArea>
       {selectedOption && (
         <Dialog.Actions>
-          <Button
+          <IconButton
             testID="search-options-confirm-button"
+            icon="check-circle-outline"
+            iconColor="black"
+            size={20}
             onPress={confirmCallback}
-            style={styles.confirmButton}>
-            <Text style={styles.confirmButtonText}>Confirmar</Text>
-          </Button>
+            mode="contained"
+            style={{
+              marginVertical: 0,
+            }}
+          />
         </Dialog.Actions>
       )}
     </Dialog>
@@ -102,7 +113,7 @@ function SearchWithOptionsDialog({
 const styles = StyleSheet.create({
   dialog: {
     position: 'absolute',
-    top: 50,
+    top: 150,
     width: '85%',
     backgroundColor: '#D2C3C3',
   },
@@ -110,6 +121,7 @@ const styles = StyleSheet.create({
     maxHeight: 200,
     borderBottomWidth: 0,
     borderTopWidth: 0,
+    marginBottom: 5,
   },
   option: {
     flexDirection: 'row-reverse',
@@ -118,7 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#370617',
   },
   confirmButtonText: {
-    color: '#FFF',
+    color: '#370617',
   },
 });
 
