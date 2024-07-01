@@ -9,7 +9,6 @@ import {
   Text,
   TextInput,
   View,
-  Linking,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
@@ -120,15 +119,12 @@ export default function RegisterScreen() {
     );
   };
 
-  const openTermsAndConditions = () => {
-    // Aquí puedes ajustar la URL de los términos y condiciones
-    Linking.openURL('https://www.example.com/terms');
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <Image source={logo} style={styles.image} resizeMode="contain" />
-      <Text style={styles.title}>Regístrate!</Text>
+      <View>
+        <Image source={logo} style={styles.image} resizeMode="contain" />
+        <Text style={styles.title}>Bacco</Text>
+      </View>
       <View style={styles.inputView}>
         <TextInput
           style={styles.input}
@@ -195,7 +191,7 @@ export default function RegisterScreen() {
         style={[styles.button, !isFormValid() && styles.buttonDisabled]}
         onPress={handleRegister}
         disabled={!isFormValid()}>
-        <Text style={styles.buttonText}>Regístrate</Text>
+        <Text style={styles.buttonText}>Registrar</Text>
       </Pressable>
 
       <View style={styles.optionsTextView}>
@@ -207,11 +203,6 @@ export default function RegisterScreen() {
           <Image source={tiktok} style={styles.icons} />
         </View>
       </View>
-
-      <Text style={styles.footerText}>
-        ¿Ya tienes una cuenta?
-        <Text style={styles.signup}> Inicia sesión!</Text>
-      </Text>
     </SafeAreaView>
   );
 }
@@ -220,25 +211,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 1,
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
   image: {
     height: 160,
     width: 170,
   },
   title: {
-    fontSize: 30,
+    fontSize: 40,
     fontWeight: 'bold',
-    textTransform: 'uppercase',
     textAlign: 'center',
-    paddingVertical: 20,
-    color: '#03071E',
+    color: '#D2C3C3',
+    fontFamily: 'sans-serif',
   },
   inputView: {
     width: '100%',
     paddingHorizontal: 40,
     marginBottom: 5,
+    marginTop: 20,
   },
   input: {
     height: 50,
@@ -317,14 +308,6 @@ const styles = StyleSheet.create({
   icons: {
     width: 40,
     height: 40,
-  },
-  footerText: {
-    textAlign: 'center',
-    color: '#03071E',
-  },
-  signup: {
-    color: '#03071E',
-    fontSize: 13,
   },
   errorText: {
     color: 'red',

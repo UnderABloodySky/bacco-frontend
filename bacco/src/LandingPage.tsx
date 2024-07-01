@@ -34,10 +34,9 @@ const LandingPage = () => {
               source={require('../assets/images/logo/output-onlinepngtools-light.png')}
               style={styles.logo}
             />
-            <Text style={styles.appName}>Bacco</Text>
           </View>
           <View style={styles.scanButtonContainer}>
-            <LandingCard onPressScanButton={handlePressingScanButton} />
+            <LandingCard />
           </View>
         </View>
       </ImageBackground>
@@ -62,19 +61,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)', // Semi-transparent overlay
   },
-  appName: {
-    color: '#F0E2CA',
-    fontSize: 60,
-    fontWeight: 'bold',
-    marginTop: 15,
-    textShadowColor: '#FFFFFFAA', // Shadow color
-    textShadowOffset: {width: 2, height: 2}, // Shadow offset
-    textShadowRadius: 4, // Shadow blur radius
-  },
   logo: {
-    width: 120,
-    height: 120,
-    top: 50,
+    height: 160,
+    width: 170,
+    top: 70,
   },
   logoContainer: {
     flex: 1,
