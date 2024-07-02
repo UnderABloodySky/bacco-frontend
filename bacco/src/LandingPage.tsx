@@ -1,26 +1,20 @@
 import * as React from 'react';
-import {StyleSheet, View, ImageBackground, Text, Image} from 'react-native';
+import {Image, ImageBackground, StyleSheet, Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {useNavigation, useRoute} from '@react-navigation/native';
 import {useCameraPermission} from 'react-native-vision-camera';
 import LandingCard from './LandingCard';
 
-const {useCallback} = React;
+const {useEffect} = React;
 
 const LandingPage = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
   const {hasPermission, requestPermission} = useCameraPermission();
-  const handlePressingScanButton = useCallback(async () => {
-    if (hasPermission) {
-      navigation.navigate('Camara', route?.params);
-    } else {
-      const permissionWasGranted = await requestPermission();
-      if (permissionWasGranted) {
-        navigation.navigate('Camara', route?.params);
-      }
+
+  useEffect(() => {
+    if (!hasPermission) {
+      requestPermission();
     }
-  }, [hasPermission, navigation, requestPermission, route?.params]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,6 +28,7 @@ const LandingPage = () => {
               source={require('../assets/images/logo/output-onlinepngtools-light.png')}
               style={styles.logo}
             />
+            <Text style={styles.appName}>Bacco</Text>
           </View>
           <View style={styles.scanButtonContainer}>
             <LandingCard />
@@ -60,6 +55,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)', // Semi-transparent overlay
+  },
+  appName: {
+    color: '#D2C3C3',
+    fontSize: 60,
+    fontWeight: 'bold',
+    marginTop: 55,
+    textShadowColor: '#444', // Shadow color
+    textShadowOffset: {width: 2, height: 2}, // Shadow offset
+    textShadowRadius: 4, // Shadow blur radius
   },
   logo: {
     height: 160,

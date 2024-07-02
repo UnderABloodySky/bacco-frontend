@@ -41,7 +41,7 @@ export default function NavBar({navigation, route, back = false}) {
       beverages: beverages,
       ingredients: ingredients,
       recipes: bodyResponse,
-      navBarTitle: 'Resultado de Recetas',
+      navBarTitle: 'Recetas',
     });
   }, [beverages, ingredients, navigation, route?.params]);
 
@@ -87,7 +87,12 @@ export default function NavBar({navigation, route, back = false}) {
             <Menu.Item
               trailingIcon="power-standby"
               onPress={() => {
-                navigation.navigate('Login', undefined);
+                closeUserMenu();
+                navigation.reset({
+                  index: 0,
+                  routes: [{name: 'Landing'}],
+                });
+                // navigation.navigate('Login', {});
               }}
               title="Cerrar sesion"
             />
@@ -102,7 +107,7 @@ export default function NavBar({navigation, route, back = false}) {
         {title !== 'Register' && title !== 'Login' && title !== 'Camara' && (
           <Appbar.Content title={title} color="white" />
         )}
-        {title === 'Resultado de Recetas' && (
+        {title === 'Recetas' && (
           <>
             {route?.params?.filteredRecipes?.length !== undefined && (
               <View

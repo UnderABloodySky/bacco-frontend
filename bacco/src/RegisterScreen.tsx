@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -125,53 +126,57 @@ export default function RegisterScreen() {
         <Image source={logo} style={styles.image} resizeMode="contain" />
         <Text style={styles.title}>Bacco</Text>
       </View>
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.input}
-          placeholder="Nombre"
-          value={name}
-          onChangeText={handleNameChange}
-          autoCorrect={false}
-          autoCapitalize="none"
-        />
-        {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
+      <KeyboardAvoidingView behavior="position" style={{width: '100%'}}>
+        <View style={styles.inputView}>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre"
+            value={name}
+            onChangeText={handleNameChange}
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+          {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Correo electrónico"
-          value={email}
-          onChangeText={handleEmailChange}
-          autoCorrect={false}
-          autoCapitalize="none"
-        />
-        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+          <TextInput
+            style={styles.input}
+            placeholder="Correo electrónico"
+            value={email}
+            onChangeText={handleEmailChange}
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+          {emailError ? (
+            <Text style={styles.errorText}>{emailError}</Text>
+          ) : null}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Contraseña"
-          secureTextEntry
-          value={password}
-          onChangeText={handlePasswordChange}
-          autoCorrect={false}
-          autoCapitalize="none"
-        />
-        {passwordError ? (
-          <Text style={styles.errorText}>{passwordError}</Text>
-        ) : null}
+          <TextInput
+            style={styles.input}
+            placeholder="Contraseña"
+            secureTextEntry
+            value={password}
+            onChangeText={handlePasswordChange}
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+          {passwordError ? (
+            <Text style={styles.errorText}>{passwordError}</Text>
+          ) : null}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Repetir contraseña"
-          secureTextEntry
-          value={confirmPassword}
-          onChangeText={handleConfirmPasswordChange}
-          autoCorrect={false}
-          autoCapitalize="none"
-        />
-        {confirmPasswordError ? (
-          <Text style={styles.errorText}>{confirmPasswordError}</Text>
-        ) : null}
-      </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Repetir contraseña"
+            secureTextEntry
+            value={confirmPassword}
+            onChangeText={handleConfirmPasswordChange}
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+          {confirmPasswordError ? (
+            <Text style={styles.errorText}>{confirmPasswordError}</Text>
+          ) : null}
+        </View>
+      </KeyboardAvoidingView>
 
       <View style={styles.rememberView}>
         <View style={styles.switchContainer}>

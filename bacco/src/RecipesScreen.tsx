@@ -1,5 +1,11 @@
 import React, {useState} from 'react';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import {Card, FAB, Icon, TouchableRipple} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -12,6 +18,7 @@ type FloatingCountBadgeProps = {
   actual: number;
   total: number;
   entities: any[];
+  windowWidth?: number;
   isIngredientsBadge?: boolean;
 };
 
@@ -19,6 +26,7 @@ const FloatingBadge = ({
   actual,
   total,
   entities,
+  windowWidth,
   isIngredientsBadge = false,
 }: FloatingCountBadgeProps) => {
   const [isHintVisible, setIsHintVisible] = useState(false);
@@ -146,8 +154,8 @@ const FloatingBadge = ({
           style={{
             position: 'absolute',
             top: 95,
-            right: 10,
-            width: 350,
+            right: 5,
+            width: windowWidth ? windowWidth - 50 : 330,
             borderRadius: 5,
             minHeight: 80,
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -182,6 +190,8 @@ const RecipesScreen = () => {
   // Access navigation params from route.params
   const {beverages, filteredRecipes, ingredients, recipes, showingFilters} =
     route.params;
+
+  const {width} = useWindowDimensions();
 
   const sortedRecipes = (filteredRecipes || recipes)
     .map(recipe => {
@@ -253,11 +263,13 @@ const RecipesScreen = () => {
                 actual={recipe.beveragesActual}
                 total={recipe.beveragesTotal}
                 entities={recipe.beverages}
+                windowWidth={width}
               />
               <FloatingBadge
                 actual={recipe.ingredientsActual}
                 total={recipe.ingredientsTotal}
                 entities={recipe.ingredients}
+                windowWidth={width}
                 isIngredientsBadge
               />
               <Card contentStyle={styles.recipeCard}>

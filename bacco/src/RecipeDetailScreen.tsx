@@ -17,6 +17,7 @@ import {
 } from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import StarRating from 'react-native-star-rating-widget';
 // @ts-ignore
 import capitalize from 'lodash/capitalize';
 
@@ -62,10 +63,11 @@ const FloatingTouchIcon = () => (
 const RecipeDetailScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {recipe} = route.params;
+  const {id: userId, recipe} = route.params;
   const windowHeight = Dimensions.get('window').height;
 
   const [comments, setComments] = useState([]);
+  const [rating, setRating] = useState(0);
 
   const fetchRecipeDetail = async recipeId => {
     const url = `http://localhost:8080/imgs/recipe/${recipeId}`;
@@ -87,9 +89,42 @@ const RecipeDetailScreen = () => {
     }
   };
 
+  const fetchRecipeRatingAverage = async recipeId => {
+    const url = `http://localhost:8080/ratings/recipe/${recipeId}/average`;
+    const headers = {
+      Accept: 'application/json',
+    };
+    const request = {
+      method: 'GET',
+      headers: headers,
+    };
+    const response = await fetch(url, request);
+    const bodyResponse = await response.json();
+    setRating(bodyResponse);
+  };
+
+  const handleStarRating = async newScore => {
+    setRating(newScore);
+    const stringifiedBody = JSON.stringify({
+      score: newScore,
+    });
+    await fetch(
+      `http://localhost:8080/ratings/recipe/${recipe.id}/user/${userId}`,
+      {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: stringifiedBody,
+      },
+    );
+  };
+
   useEffect(() => {
     if (recipe?.id) {
       fetchRecipeDetail(recipe.id);
+      fetchRecipeRatingAverage(recipe.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -97,11 +132,18 @@ const RecipeDetailScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <Image
-          src={recipe.imagePath}
-          style={windowHeight ? {height: windowHeight * 0.7} : null}
-          resizeMode="cover"
-        />
+        <View>
+          <Image
+            src={recipe.imagePath}
+            style={windowHeight ? {height: windowHeight * 0.7} : null}
+            resizeMode="cover"
+          />
+          <StarRating
+            rating={rating}
+            onChange={handleStarRating}
+            style={styles.starRating}
+          />
+        </View>
         <View style={styles.dataContainer}>
           <View style={styles.recipeInfoContainer}>
             <Text style={styles.recipeName}>{recipe.name}</Text>
@@ -210,9 +252,7 @@ const RecipeDetailScreen = () => {
           </View>
           <Divider bold />
           <View style={styles.entityListContainer}>
-            <Text style={styles.entityListHeader}>
-              Comentarios
-            </Text>
+            <Text style={styles.entityListHeader}>Comentarios</Text>
           </View>
           <Comments comments={comments} />
         </View>
@@ -287,6 +327,11 @@ const styles = StyleSheet.create({
   },
   entityListContainer: {
     paddingVertical: 20,
+  },
+  starRating: {
+    position: 'absolute',
+    bottom: 15,
+    right: 15,
   },
 });
 

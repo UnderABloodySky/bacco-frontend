@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {
   Alert,
   Image,
+  KeyboardAvoidingView,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -67,10 +68,10 @@ export default function LoginForm() {
         </Pressable>
         <Text style={styles.title}>Bacco</Text>
       </View>
-      <View style={styles.inputView}>
+      <KeyboardAvoidingView behavior="height" style={styles.inputView}>
         <TextInput
           style={styles.input}
-          placeholder="Email o usuario"
+          placeholder="Nombre de usuario"
           value={username}
           onChangeText={text => {
             setErrorMessage('');
@@ -94,7 +95,7 @@ export default function LoginForm() {
         {errorMessage ? (
           <Text style={styles.errorText}>{errorMessage}</Text>
         ) : null}
-      </View>
+      </KeyboardAvoidingView>
       <View style={styles.rememberView}>
         <View style={styles.switch}>
           <Switch
